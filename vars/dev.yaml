@@ -1,0 +1,5 @@
+variables:
+  webAppName:    azure-netcore6-demo-dev
+  blobContainer: netcore6-dev
+  cdnEndpoint:   netcore6demo-dev
+  nodeEnvName:   staging

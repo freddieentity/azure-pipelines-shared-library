@@ -1,0 +1,5 @@
+variables:
+  webAppName:    azure-netcore6-demo
+  blobContainer: netcore6
+  cdnEndpoint:   netcore6demo-prod
+  nodeEnvName:   production

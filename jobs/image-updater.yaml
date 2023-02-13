@@ -1,0 +1,15 @@
+jobs:
+- job: UpdateNewImage
+  displayName: Job - Update new image
+  steps:
+  - bash: |
+      echo 'Config...'
+      - git config --global user.email azure-devops@gmail.com
+      - git config --global user.name azure-devops
+      echo 'Change manifests ...'
+      - git clone https://gitlab.com/gitops-freddieentity/manifests
+      - cd application/values
+      - sed -i "s/tag:.*/tag:\ \"$(BuildID)\"/" "dev/adservice.yaml"
+      - git commit -am "New image tag for to $(BuildID)"
+      - git push
+    displayName: Update new image

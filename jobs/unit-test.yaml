@@ -1,0 +1,7 @@
+jobs:
+- job: UnitTest
+  displayName: Job - UnitTest
+  steps:
+  - bash: |
+      echo 'UnitTesting...'
+    displayName: UnitTest

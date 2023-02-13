@@ -1,0 +1,13 @@
+jobs:
+- deployment: Check
+  environment: development
+  displayName: Job - Check
+  workspace:
+    clean: all
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - bash: |
+            echo 'Checking...'
+          displayName: Check

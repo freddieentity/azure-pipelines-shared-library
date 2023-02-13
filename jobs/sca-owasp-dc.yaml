@@ -1,0 +1,7 @@
+jobs:
+- job: SCAScanning
+  displayName: Job - SCA Scanning
+  steps:
+  - bash: |
+      echo 'SCA Scanning...'
+    displayName: SCA Scanning

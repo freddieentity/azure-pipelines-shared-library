@@ -1,0 +1,60 @@
+# Lint
+# Restore
+# Build
+# Unit tests
+
+# name: $(BuildID)
+trigger: # trigger base on the current repo
+  batch: true
+  branches:
+    include:
+    - fix/*
+    - feat/*
+    - main
+  tags:
+    include:
+    - v*
+  paths:
+    exclude:
+    - README.md
+
+pr:
+- main
+
+pool:
+  # vmImage: 'ubuntu-latest'
+  name: 'Homelabpool'
+
+variables:
+- template: vars/global.yaml
+- template: vars/dev.yaml
+
+stages:
+
+# Build
+# -----
+- stage: BuildStage
+  displayName: Build Stage
+  jobs:
+  - template: jobs/build.yaml
+
+# Unit Tests
+# -----
+- stage: UnitTestStage
+  displayName: Unit Test Stage
+  jobs:
+  - template: jobs/unit-test.yaml
+
+# SCA
+# -----
+- stage: SCAStage
+  displayName: SCA Stage
+  jobs:
+  - template: jobs/sca-owasp-dc.yaml
+
+# SAST
+# -----
+- stage: SASTStage
+  displayName: SAST Stage
+  jobs:
+  - template: jobs/sast-sonar.yaml
