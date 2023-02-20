@@ -10,10 +10,8 @@ parameters:
   default: []
 - name: targetEndpoint
   type: string
-  default: https://www.example.com
 - name: reportOutputPath
   type: string
-  default: /home/vsts/work/1/a/zap_report.html
 
 stages:
   - stage:

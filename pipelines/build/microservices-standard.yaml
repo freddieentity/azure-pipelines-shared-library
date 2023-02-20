@@ -18,22 +18,31 @@ parameters:
     default: $(Build.BuildNumber)
 
 stages:
+  # UnitTest
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
     parameters:
       stageName: UnitTest
 
+  # SCA
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
     parameters:
       stageName: SCA
       stageDependencies:
         - UnitTest
 
+  # SAST
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
     parameters:
       stageName: SAST
       stageDependencies:
         - UnitTest
+      sonarQubeToken: 4ae523f01ada58d6b50e1667024d06494989a1c9
+      sonarQubeOrganization: freddieentity
+      sonarQubeProjectKey: complete-cicd
+      sonarQubeSources: $(Pipeline.Workspace)
+      sonarQubeHostURL: https://sonarcloud.io
 
+  # Build
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
     parameters:
       stageName: ContainerImageBuild
@@ -44,15 +53,18 @@ stages:
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
 
+  # Container Image Scan
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/container/trivy.yaml
     parameters:
       stageName: ContainerImageScan
       stageDependencies:
         - ContainerImageBuild
+      trivyTemplatePath: https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl
       containerRegistryName: ${{ parameters.containerRegistryName }}
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
 
+  # Dev
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:
       environment: Dev
@@ -60,6 +72,7 @@ stages:
       stageDependencies:
         - ContainerImageBuild
 
+  # Test
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:
       environment: Test
@@ -67,13 +80,17 @@ stages:
       stageDependencies:
         - Dev
 
+  # DAST
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dast/owasp-zap.yaml
     parameters:
       environment: Test
       stageName: DAST
       stageDependencies:
         - Test
+      targetEndpoint: https://www.example.com
+      reportOutputPath: /home/vsts/work/1/a/zap_report.html
 
+  # Prod
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:
       environment: Prod

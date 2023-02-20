@@ -37,11 +37,11 @@ stages:
           # unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
           # export PATH=$SONAR_SCANNER_HOME/bin:$PATH
           # export SONAR_SCANNER_OPTS="-server"
-          # export SONAR_TOKEN=4ae523f01ada58d6b50e1667024d06494989a1c9
+          # export SONAR_TOKEN=${{ parameters.sonarQubeToken }}
           # echo 'SonarQube scanning...'
           # sonar-scanner \
-          #   -Dsonar.organization=freddieentity \
-          #   -Dsonar.projectKey=complete-cicd \
-          #   -Dsonar.sources=$(Pipeline.Workspace) \
-          #   -Dsonar.host.url=https://sonarcloud.io
+          #   -Dsonar.organization=${{ parameters.sonarQubeOrganization }} \
+          #   -Dsonar.projectKey=${{ parameters.sonarQubeProjectKey }}\
+          #   -Dsonar.sources=${{ parameters.sonarQubeSources }} \
+          #   -Dsonar.host.url=${{ parameters.sonarQubeHostURL }}
         displayName: SonarQube Setup and Scanning
