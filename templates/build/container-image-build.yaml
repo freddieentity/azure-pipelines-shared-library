@@ -26,8 +26,8 @@ stages:
     - job: Docker${{ parameters.stageName }}
       displayName: Docker Container Image Build
       steps:
-      - template: ../steps/debug-vars.yaml
-      - template: ../steps/append-sha.yaml
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/helpers/debug-vars.yaml
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/helpers/append-sha.yaml
 
       - bash: |
           docker build -t ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} .
