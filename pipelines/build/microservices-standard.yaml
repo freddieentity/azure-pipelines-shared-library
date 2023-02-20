@@ -52,3 +52,32 @@ stages:
       containerRegistryName: ${{ parameters.containerRegistryName }}
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+    parameters:
+      environment: Dev
+      stageName: Dev
+      stageDependencies:
+        - ContainerImageBuild
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+    parameters:
+      environment: Test
+      stageName: Test
+      stageDependencies:
+        - Dev
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/dast/owasp-zap.yaml
+    parameters:
+      environment: Test
+      stageName: DAST
+      stageDependencies:
+        - Test
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+    parameters:
+      environment: Prod
+      stageName: Prod
+      stageDependencies:
+        - DAST
+        - Test
