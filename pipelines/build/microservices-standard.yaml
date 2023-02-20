@@ -54,7 +54,7 @@ stages:
       containerImageTag: ${{ parameters.containerImageTag }}
 
   # Container Image Scan
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/container/trivy.yaml
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
     parameters:
       stageName: ContainerImageScan
       stageDependencies:
