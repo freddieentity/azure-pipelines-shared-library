@@ -1,0 +1,54 @@
+# Get Secrets
+# Lint
+# Restore
+# Build
+# Unit tests
+# Integration tests
+# Publish build artifacts
+# Publish container image
+parameters:
+  - name: containerRegistryName
+    type: string
+    default: freddieentity.azurecr.io
+  - name: containerImageName
+    type: string
+    default: weatherservice
+  - name: containerImageTag
+    type: string
+    default: $(Build.BuildNumber)
+
+stages:
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
+    parameters:
+      stageName: UnitTest
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
+    parameters:
+      stageName: SCA
+      stageDependencies:
+        - UnitTest
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
+    parameters:
+      stageName: SAST
+      stageDependencies:
+        - UnitTest
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
+    parameters:
+      stageName: ContainerImageBuild
+      stageDependencies:
+        - SCA
+        - SAST
+      containerRegistryName: ${{ parameters.containerRegistryName }}
+      containerImageName: ${{ parameters.containerImageName }}
+      containerImageTag: ${{ parameters.containerImageTag }}
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/container/trivy.yaml
+    parameters:
+      stageName: ContainerImageScan
+      stageDependencies:
+        - ContainerImageBuild
+      containerRegistryName: ${{ parameters.containerRegistryName }}
+      containerImageName: ${{ parameters.containerImageName }}
+      containerImageTag: ${{ parameters.containerImageTag }}

@@ -1,0 +1,25 @@
+parameters:
+- name: environment
+  type: string
+  default: dev
+- name: stageName
+  type: string
+  default: 
+- name: stageDependencies 
+  type: object 
+  default: []
+
+
+stages:
+  - stage:
+    displayName: ${{ parameters.stageName }}
+    # condition: 
+    dependsOn: ${{ parameters.stageDependencies }}
+    # pool:
+    jobs:
+    - job: ContainerImageScanning
+      displayName: Container Image Scanning
+      steps:
+      - bash: |
+          echo 'Container Image Scanning...'
+        displayName: Container Image Scanning

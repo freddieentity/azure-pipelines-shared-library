@@ -1,0 +1,34 @@
+# Deploy to staging
+# Acceptance tests
+# Promote container image
+# Manual intervention (optional)
+# Release
+stages:
+  - template: ../../templates/build/unit-test.yaml
+    parameters:
+      artifactDirectory: 
+
+  - template: ../../templates/build/sca-owasp-dc.yaml
+    parameters:
+      stageDependencies:
+        - UnitTest
+      artifactDirectory: 
+
+  - template: ../../templates/build/sast-sonar.yaml
+    parameters:
+      stageDependencies:
+        - UnitTest
+      artifactDirectory: 
+
+  - template: ../../templates/build/container-image-build.yaml
+    parameters:
+        stageDependencies:
+          - SCA
+          - SAST
+        containerRegistryName: 
+        containerImageName:
+        containerImageTag:
+
+  - template: ../../templates/build/container-image-scan-trivy.yaml
+    parameters:
+      artifactDirectory: 

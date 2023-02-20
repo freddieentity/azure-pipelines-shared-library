@@ -1,0 +1,63 @@
+parameters:
+- name: environment
+  type: string
+  default: dev
+- name: stageName
+  type: string
+  default: ContainerImageBuild
+- name: stageDependencies 
+  type: object 
+  default: []
+- name: containerRegistryName
+  type: string
+- name: containerImageName
+  type: string
+- name: containerImageTag
+  type: string
+  default: $(Build.BuildId)
+
+stages:
+  - stage:
+    displayName: ${{ parameters.stageName }}
+    # condition: 
+    dependsOn: ${{ parameters.stageDependencies }}
+    # pool:
+    jobs:
+    - job: Docker${{ parameters.stageName }}
+      displayName: Docker Container Image Build
+      steps:
+      - template: ../steps/debug-vars.yaml
+      - template: ../steps/append-sha.yaml
+
+      - bash: |
+          docker build -t ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} .
+        displayName: Docker Build
+
+      - task: Docker@2
+        displayName: Registry - Login
+        inputs:
+          command: login
+          containerRegistry: $(registryCredentials)
+
+      - bash: |
+          docker push ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}
+        displayName: Push container image
+
+      - task: Docker@2
+        displayName: Registry - Logout
+        inputs:
+          command: logout
+          containerRegistry: $(registryCredentials)
+
+      # - task: AzureCLI@2
+      #   displayName: 'ACR - lock production image'
+      #   condition: eq(variables.isTag, 'True')
+      #   inputs:
+      #     azureSubscription: $(armConnection)
+      #     scriptType: bash
+      #     scriptLocation: inlineScript
+      #     inlineScript: |
+      #       az acr repository update \
+      #         --name $(dockerRegistry) \
+      #         --image $(imageName):$(imageTag) \
+      #         --write-enabled false

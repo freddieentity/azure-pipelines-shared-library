@@ -1,0 +1,52 @@
+parameters:
+- name: environment
+  type: string
+  default: dev
+- name: stageDependencies 
+  type: object 
+  default: []
+- name: stageName
+  type: string
+- name: trivyTemplatePath
+  type: string
+  default: '@templates/junit.tpl'
+- name: containerRegistryName
+  type: string
+- name: containerImageName
+  type: string
+- name: containerImageTag
+  type: string
+
+stages:
+  - stage:
+    displayName: ${{ parameters.stageName }}
+    # condition: 
+    dependsOn: ${{ parameters.stageDependencies }}
+    # pool:
+    jobs:
+    - job: TrivyContainerImageScanning
+      displayName: Trivy Container Image Scanning
+      steps:
+      - bash: |
+          sudo apt-get install wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+        displayName: Trivy Installation
+      
+      - bash: |
+          trivy image --severity LOW,MEDIUM --format template --template ${{ parameters.trivyTemplatePath }} -o junit-report-low-med.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}         
+          trivy image --severity HIGH,CRITICAL --format template --template ${{ parameters.trivyTemplatePath }} -o junit-report-high-crit.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} 
+        displayName: Trivy Container Image Scanning
+
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/junit*.xml'
+          mergeTestResults: true
+          failTaskOnFailedTests: false
+          testRunTitle: 'Trivy Vulnerabilities Report'
+        condition: 'always()'
+        displayName: Trivy Report Export

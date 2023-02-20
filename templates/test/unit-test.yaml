@@ -1,0 +1,25 @@
+parameters:
+- name: environment
+  type: string
+  default: dev
+- name: stageName
+  type: string
+  default: 
+- name: stageDependencies 
+  type: object 
+  default: []
+
+
+stages:
+  - stage:
+    displayName: ${{ parameters.stageName }}
+    # condition: 
+    dependsOn: ${{ parameters.stageDependencies }}
+    # pool:
+    jobs:
+    - job: UnitTesting
+      displayName: Unit Testing
+      steps:
+      - bash: |
+          echo 'Unit Testing...'
+        displayName: Unit Testing
