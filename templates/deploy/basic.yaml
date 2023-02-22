@@ -4,13 +4,13 @@ parameters:
   default: dev
 - name: stageName
   type: string
-  default: 
+  default: ''
 - name: stageDependencies 
   type: object 
   default: []
 - name: deploymentPoolName
   type: string
-  default: 
+  default: ''
 
 stages:
   - stage: ${{ parameters.stageName }}
