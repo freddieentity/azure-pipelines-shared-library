@@ -10,7 +10,7 @@ parameters:
   default: []
 - name: deploymentPoolName
   type: string
-  default: ''
+  default: 'Homelabpool'
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -19,8 +19,8 @@ stages:
     dependsOn: ${{ parameters.stageDependencies }}
     # pool:
     jobs:
-    - deployment: ${{ parameters.stageName }}
-      displayName: ${{ parameters.stageName }} 
+    - deployment: 
+      # displayName: ${{ parameters.stageName }} 
       pool:
         name: ${{ parameters.deploymentPoolName }} 
       environment: ${{ parameters.environment }}
@@ -29,5 +29,4 @@ stages:
           deploy:
             steps:
             - bash: |
-                echo '${{ parameters.stageName }} ...'
-              displayName: ${{ parameters.stageName }} 
+                echo 'Deploying to ${{ parameters.stageName }} ...'

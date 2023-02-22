@@ -64,13 +64,14 @@ stages:
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
 
-  # Dev
+  # Development
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:
-      environment: Dev
-      stageName: Dev
+      environment: Development
+      stageName: Development
       stageDependencies:
         - ContainerImageBuild
+      deploymentPoolName: Homelabpool
 
   # Test
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
@@ -78,7 +79,8 @@ stages:
       environment: Test
       stageName: Test
       stageDependencies:
-        - Dev
+        - Development
+      deploymentPoolName: Homelabpool
 
   # DAST
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/dast/owasp-zap.yaml
@@ -90,11 +92,12 @@ stages:
       targetEndpoint: https://www.example.com
       reportOutputPath: /home/vsts/work/1/a/zap_report.html
 
-  # Prod
+  # Production
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:
-      environment: Prod
-      stageName: Prod
+      environment: Production
+      stageName: Production
       stageDependencies:
         - DAST
         - Test
+      deploymentPoolName: Homelabpool
