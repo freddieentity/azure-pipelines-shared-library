@@ -20,7 +20,7 @@ parameters:
   type: string
 
 stages:
-  - stage:
+  - stage: ${{ parameters.stageName }}
     displayName: ${{ parameters.stageName }}
     # condition: 
     dependsOn: ${{ parameters.stageDependencies }}

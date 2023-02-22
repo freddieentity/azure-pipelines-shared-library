@@ -11,8 +11,8 @@ parameters:
 
 
 stages:
-  - stage:
-    displayName: Build
+  - stage: ${{ parameters.stageName }}
+    displayName: ${{ parameters.stageName }}
     # condition: 
     dependsOn: ${{ parameters.stageDependencies }}
     # pool:

@@ -17,16 +17,22 @@ parameters:
   default: $(Build.BuildId)
 
 stages:
-  - stage:
+  - stage: ${{ parameters.stageName }}
     displayName: ${{ parameters.stageName }}
-    # condition: 
+    condition: |
+      and
+      (
+        eq(dependencies.WebApp1.result, 'Succeeded'),
+        in(dependencies.WebApp2.result, 'Succeeded', 'Skipped'),
+        in(dependencies.DependentJob.result, 'Succeeded', 'Skipped')
+      )
     dependsOn: ${{ parameters.stageDependencies }}
     # pool:
     jobs:
-    - job: Docker${{ parameters.stageName }}
+    - job: DockerContainerImageBuild
       displayName: Docker Container Image Build
       steps:
-      - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/helpers/debug-vars.yaml
+      # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/helpers/debug-vars.yaml
       # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/helpers/append-sha.yaml
 
       - bash: |

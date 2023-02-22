@@ -12,9 +12,10 @@ parameters:
   type: string
 - name: reportOutputPath
   type: string
+  default: $(Build.ArtifactStagingDirectory)
 
 stages:
-  - stage:
+  - stage: ${{ parameters.stageName }}
     displayName: ${{ parameters.stageName }}
     # condition: 
     dependsOn: ${{ parameters.stageDependencies }}

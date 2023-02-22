@@ -8,17 +8,26 @@ parameters:
 - name: stageDependencies 
   type: object 
   default: []
+- name: deploymentPoolName
+  type: string
+  default: 
 
 stages:
-  - stage:
+  - stage: ${{ parameters.stageName }}
     displayName: ${{ parameters.stageName }}
     # condition: 
     dependsOn: ${{ parameters.stageDependencies }}
     # pool:
     jobs:
-    - job: ${{ parameters.stageName }}
+    - deployment: ${{ parameters.stageName }}
       displayName: ${{ parameters.stageName }} 
-      steps:
-      - bash: |
-          echo '${{ parameters.stageName }} ...'
-        displayName: ${{ parameters.stageName }} 
+      pool:
+        name: ${{ parameters.deploymentPoolName }} 
+      environment: ${{ parameters.environment }}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - bash: |
+                echo '${{ parameters.stageName }} ...'
+              displayName: ${{ parameters.stageName }} 
