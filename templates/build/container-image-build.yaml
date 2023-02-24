@@ -15,17 +15,19 @@ parameters:
 - name: containerImageTag
   type: string
   default: $(Build.BuildId)
+- name: containerImageName
+  type: string
 
 stages:
   - stage: ${{ parameters.stageName }}
     displayName: ${{ parameters.stageName }}
-    condition: |
-      and
-      (
-        eq(dependencies.WebApp1.result, 'Succeeded'),
-        in(dependencies.WebApp2.result, 'Succeeded', 'Skipped'),
-        in(dependencies.DependentJob.result, 'Succeeded', 'Skipped')
-      )
+    # condition: |
+    #   and
+    #   (
+    #     eq(dependencies.WebApp1.result, 'Succeeded'),
+    #     in(dependencies.WebApp2.result, 'Succeeded', 'Skipped'),
+    #     in(dependencies.DependentJob.result, 'Succeeded', 'Skipped')
+    #   )
     dependsOn: ${{ parameters.stageDependencies }}
     # pool:
     jobs:
@@ -43,7 +45,7 @@ stages:
         displayName: Registry - Login
         inputs:
           command: login
-          containerRegistry: $(registryCredentials)
+          containerRegistry: $(containerRegistryCredentials)
 
       - bash: |
           docker push ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}
@@ -53,7 +55,7 @@ stages:
         displayName: Registry - Logout
         inputs:
           command: logout
-          containerRegistry: $(registryCredentials)
+          containerRegistry: $(containerRegistryCredentials)
 
       # - task: AzureCLI@2
       #   displayName: 'ACR - lock production image'
