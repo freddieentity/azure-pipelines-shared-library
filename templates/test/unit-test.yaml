@@ -7,8 +7,6 @@ parameters:
   default: ''
 - name: stageDependencies 
   type: object 
-  default: 
-
 
 stages:
   - stage: ${{ parameters.stageName }}

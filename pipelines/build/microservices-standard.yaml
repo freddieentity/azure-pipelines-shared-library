@@ -22,6 +22,7 @@ stages:
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
     parameters:
       stageName: UnitTest
+      stageDependencies: 
 
   # SCA
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
