@@ -1,4 +1,3 @@
 variables:
-  microserviceName:    weatherservice
-  containerImageName: weatherservice
-  sonarProjectKey: weatherservice
+  MICROSERVICE_NAME:    weatherservice
+  SONAR_PROJECT_KEY:  weatherservice

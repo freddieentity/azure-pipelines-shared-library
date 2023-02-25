@@ -29,36 +29,31 @@ parameters:
     type: string
     default: $(Build.BuildNumber)
   - name: enableUnitTest
-    displayName: Enable Unit Test
     type: boolean
     default: true
   - name: enableSCA
-    displayName: Enable SCA
     type: boolean
     default: true
   - name: enableSAST
-    displayName: Enable SAST
     type: boolean
     default: true
   - name: enableContainerImageBuild
-    displayName: Enable Build
     type: boolean
     default: true
   - name: enableContainerImageScan
-    displayName: Enable Container Image Scanning
     type: boolean
     default: true
 
 stages:
   # UnitTest
-  - ${{ if eq(parameters['enableUnitTest'], true) }}:
+  - ${{ if eq(parameters.enableUnitTest, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
       parameters:
         stageName: UnitTest
         stageDependencies: 
 
   # SCA
-  - ${{ if eq(parameters['enableSCA'], true) }}:
+  - ${{ if eq(parameters.enableSCA, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
       parameters:
         stageName: SCA
@@ -66,7 +61,7 @@ stages:
           - UnitTest
 
   # SAST
-  - ${{ if eq(parameters['enableSAST'], true) }}:
+  - ${{ if eq(parameters.enableSAST, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
       parameters:
         stageName: SAST
@@ -79,7 +74,7 @@ stages:
         sonarQubeHostURL: https://sonarcloud.io
 
   # Build
-  - ${{ if eq(parameters['enableContainerImageBuild'], true) }}:
+  - ${{ if eq(parameters.enableContainerImageBuild, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
       parameters:
         stageName: ContainerImageBuild
@@ -91,7 +86,7 @@ stages:
         containerImageTag: ${{ parameters.containerImageTag }}
 
   # Container Image Scan
-  - ${{ if eq(parameters['enableContainerImageScan'], true) }}:
+  - ${{ if eq(parameters.enableContainerImageScan, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
       parameters:
         stageName: ContainerImageScan
