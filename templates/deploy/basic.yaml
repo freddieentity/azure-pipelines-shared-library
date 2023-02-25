@@ -7,7 +7,7 @@ parameters:
   default: ''
 - name: stageDependencies 
   type: object 
-  default: []
+  default: 
 - name: deploymentPoolName
   type: string
   default: 'Homelabpool'

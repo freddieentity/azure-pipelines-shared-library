@@ -7,7 +7,7 @@ parameters:
   default: ContainerImageBuild
 - name: stageDependencies 
   type: object 
-  default: []
+  default: 
 - name: containerRegistryName
   type: string
 - name: containerImageName

@@ -7,7 +7,7 @@ parameters:
   default: ''
 - name: stageDependencies 
   type: object 
-  default: []
+  default: 
 - name: targetEndpoint
   type: string
 - name: reportOutputPath

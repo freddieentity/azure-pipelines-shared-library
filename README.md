@@ -62,7 +62,10 @@ stages:
 
         - download: theSourcePipelineName # download artifact from source pipeline
           artifact: theSourcePipelineArtifact
+
 ```
+https://marketplace.visualstudio.com/items?itemName=gittools.gittools
+
 https://learn.microsoft.com/en-us/azure/architecture/example-scenario/apps/devops-dotnet-baseline
 ![CI/CD baseline architecture with Azure Pipelines](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/apps/media/azure-devops-ci-cd-architecture.svg#lightbox)
 
