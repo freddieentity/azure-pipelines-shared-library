@@ -43,6 +43,12 @@ parameters:
   - name: enableContainerImageScan
     type: boolean
     default: true
+  - name: enableDeployment
+    type: boolean
+    default: true
+  - name: enableDAST
+    type: boolean
+    default: true
 
 stages:
   # UnitTest
@@ -97,33 +103,36 @@ stages:
         containerImageName: ${{ parameters.containerImageName }}
         containerImageTag: ${{ parameters.containerImageTag }}
 
-  # # Development
-  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
-  #   parameters:
-  #     environment: Development
-  #     stageName: Development
-  #     stageDependencies:
-  #       - ContainerImageBuild
-  #     deploymentPoolName: Homelabpool
+  # Development
+  - ${{ if eq(parameters.enableDeployment, true) }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+      parameters:
+        environment: Development
+        stageName: Development
+        stageDependencies:
+          - ContainerImageBuild
+        deploymentPoolName: Homelabpool
 
-  # # Test
-  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
-  #   parameters:
-  #     environment: Test
-  #     stageName: Test
-  #     stageDependencies:
-  #       - Development
-  #     deploymentPoolName: Homelabpool
+  # Test
+  - ${{ if eq(parameters.enableDeployment, true) }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+      parameters:
+        environment: Test
+        stageName: Test
+        stageDependencies:
+          - Development
+        deploymentPoolName: Homelabpool
 
-  # # DAST
-  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/dast/owasp-zap.yaml
-  #   parameters:
-  #     environment: Test
-  #     stageName: DAST
-  #     stageDependencies:
-  #       - Test
-  #     targetEndpoint: https://www.example.com
-  #     reportOutputPath: /home/vsts/work/1/a/zap_report.html
+  # DAST
+  - ${{ if eq(parameters.enableDAST, true) }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/dast/owasp-zap.yaml
+      parameters:
+        environment: Test
+        stageName: DAST
+        stageDependencies:
+          - Test
+        targetEndpoint: https://www.example.com
+        reportOutputPath: /home/vsts/work/1/a/zap_report.html
 
   # # Production
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
