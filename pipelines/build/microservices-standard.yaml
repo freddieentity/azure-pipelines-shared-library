@@ -7,10 +7,10 @@
 # Publish build artifacts
 # Publish container image
 parameters:
-  # - name: environment
-  #   displayName: Environment
-  #   type: string
-  #   default: Development
+  - name: environment
+    displayName: Environment
+    type: string
+    default: Development
   # - name: unitTestSourcesDirectory
   #   displayName: Unit Test Sources Directory
   #   type: string
