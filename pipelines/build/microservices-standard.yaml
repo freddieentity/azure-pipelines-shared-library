@@ -28,54 +28,79 @@ parameters:
   - name: containerImageTag
     type: string
     default: $(Build.BuildNumber)
+  - name: enableUnitTest
+    displayName: Enable Unit Test
+    type: boolean
+    default: true
+  - name: enableSCA
+    displayName: Enable SCA
+    type: boolean
+    default: true
+  - name: enableSAST
+    displayName: Enable SAST
+    type: boolean
+    default: true
+  - name: enableBuild
+    displayName: Enable Build
+    type: boolean
+    default: true
+  - name: enableContainerImageScanning
+    displayName: Enable Container Image Scanning
+    type: boolean
+    default: true
 
 stages:
   # UnitTest
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
-    parameters:
-      stageName: UnitTest
-      stageDependencies: 
+  - ${{ if eq(${{ parameters.enableUnitTest }}, 'True') }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
+      parameters:
+        stageName: UnitTest
+        stageDependencies: 
 
   # SCA
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
-    parameters:
-      stageName: SCA
-      stageDependencies:
-        - UnitTest
+  - ${{ if eq(${{ parameters.enableSCA }}, 'True') }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
+      parameters:
+        stageName: SCA
+        stageDependencies:
+          - UnitTest
 
   # SAST
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
-    parameters:
-      stageName: SAST
-      stageDependencies:
-        - UnitTest
-      sonarQubeToken: 4ae523f01ada58d6b50e1667024d06494989a1c9
-      sonarQubeOrganization: freddieentity
-      sonarQubeProjectKey: complete-cicd
-      sonarQubeSources: $(Pipeline.Workspace)
-      sonarQubeHostURL: https://sonarcloud.io
+  - ${{ if eq(${{ parameters.enableSAST }}, 'True') }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
+      parameters:
+        stageName: SAST
+        stageDependencies:
+          - UnitTest
+        sonarQubeToken: 4ae523f01ada58d6b50e1667024d06494989a1c9
+        sonarQubeOrganization: freddieentity
+        sonarQubeProjectKey: complete-cicd
+        sonarQubeSources: $(Pipeline.Workspace)
+        sonarQubeHostURL: https://sonarcloud.io
 
   # Build
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
-    parameters:
-      stageName: ContainerImageBuild
-      stageDependencies:
-        - SCA
-        - SAST
-      containerRegistryName: ${{ parameters.containerRegistryName }}
-      containerImageName: ${{ parameters.containerImageName }}
-      containerImageTag: ${{ parameters.containerImageTag }}
+  - ${{ if eq(${{ parameters.enableBuild }}, 'True') }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
+      parameters:
+        stageName: ContainerImageBuild
+        stageDependencies:
+          - SCA
+          - SAST
+        containerRegistryName: ${{ parameters.containerRegistryName }}
+        containerImageName: ${{ parameters.containerImageName }}
+        containerImageTag: ${{ parameters.containerImageTag }}
 
   # Container Image Scan
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
-    parameters:
-      stageName: ContainerImageScan
-      stageDependencies:
-        - ContainerImageBuild
-      trivyTemplatePath: https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl
-      containerRegistryName: ${{ parameters.containerRegistryName }}
-      containerImageName: ${{ parameters.containerImageName }}
-      containerImageTag: ${{ parameters.containerImageTag }}
+  - ${{ if eq(${{ parameters.enableContainerImageScanning }}, 'True') }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
+      parameters:
+        stageName: ContainerImageScan
+        stageDependencies:
+          - ContainerImageBuild
+        trivyTemplatePath: https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl
+        containerRegistryName: ${{ parameters.containerRegistryName }}
+        containerImageName: ${{ parameters.containerImageName }}
+        containerImageTag: ${{ parameters.containerImageTag }}
 
   # # Development
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
