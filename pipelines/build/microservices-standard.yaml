@@ -40,7 +40,7 @@ parameters:
     displayName: Enable SAST
     type: boolean
     default: true
-  - name: enableBuild
+  - name: enableContainerImageBuild
     displayName: Enable Build
     type: boolean
     default: true
@@ -51,14 +51,14 @@ parameters:
 
 stages:
   # UnitTest
-  - ${{ if eq(parameters.enableUnitTest, 'True') }}:
+  - ${{ if eq(parameters.enableUnitTest, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
       parameters:
         stageName: UnitTest
         stageDependencies: 
 
   # SCA
-  - ${{ if eq(parameters.enableSCA, 'True') }}:
+  - ${{ if eq(parameters.enableSCA, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
       parameters:
         stageName: SCA
@@ -66,7 +66,7 @@ stages:
           - UnitTest
 
   # SAST
-  - ${{ if eq(parameters.enableSAST, 'True') }}:
+  - ${{ if eq(parameters.enableSAST, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
       parameters:
         stageName: SAST
@@ -79,7 +79,7 @@ stages:
         sonarQubeHostURL: https://sonarcloud.io
 
   # Build
-  - ${{ if eq(parameters.enableBuild, 'True') }}:
+  - ${{ if eq(parameters.enableContainerImageBuild, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
       parameters:
         stageName: ContainerImageBuild
@@ -91,7 +91,7 @@ stages:
         containerImageTag: ${{ parameters.containerImageTag }}
 
   # Container Image Scan
-  - ${{ if eq(parameters.enableContainerImageScanning, 'True') }}:
+  - ${{ if eq(parameters.enableContainerImageScanning, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
       parameters:
         stageName: ContainerImageScan
