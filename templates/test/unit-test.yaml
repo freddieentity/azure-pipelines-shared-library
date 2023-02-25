@@ -12,7 +12,7 @@ stages:
   - stage: ${{ parameters.stageName }}
     displayName: ${{ parameters.stageName }}
     # condition: 
-    dependsOn: ${{ parameters.stageDependencies }}
+    # dependsOn: ${{ parameters.stageDependencies }}
     # pool:
     jobs:
     - job: UnitTesting
