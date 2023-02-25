@@ -44,7 +44,7 @@ parameters:
     displayName: Enable Build
     type: boolean
     default: true
-  - name: enableContainerImageScanning
+  - name: enableContainerImageScan
     displayName: Enable Container Image Scanning
     type: boolean
     default: true
@@ -91,7 +91,7 @@ stages:
         containerImageTag: ${{ parameters.containerImageTag }}
 
   # Container Image Scan
-  - ${{ if eq(parameters['enableContainerImageScanning'], true) }}:
+  - ${{ if eq(parameters['enableContainerImageScan'], true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
       parameters:
         stageName: ContainerImageScan
