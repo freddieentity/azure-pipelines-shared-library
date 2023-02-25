@@ -15,8 +15,6 @@ parameters:
 - name: containerImageTag
   type: string
   default: $(Build.BuildId)
-- name: containerImageName
-  type: string
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -45,7 +43,7 @@ stages:
         displayName: Registry - Login
         inputs:
           command: login
-          containerRegistry: $(containerRegistryCredentials)
+          containerRegistry: $(CONTAINER_REGISTRY_CREDENTIALS)
 
       - bash: |
           docker push ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}
@@ -55,7 +53,7 @@ stages:
         displayName: Registry - Logout
         inputs:
           command: logout
-          containerRegistry: $(containerRegistryCredentials)
+          containerRegistry: $(CONTAINER_REGISTRY_CREDENTIALS)
 
       # - task: AzureCLI@2
       #   displayName: 'ACR - lock production image'
