@@ -1,0 +1,79 @@
+# Deploy to staging
+# Acceptance tests
+# Promote container image
+# Manual intervention (optional)
+# Release
+trigger: none
+resources:
+  # containers:
+  # - container: linuxsqlpackage
+  #   image: wolfgangofner/linuxsqlpackage:1.0
+  pipelines:
+   - pipeline: weathersservice
+     source: weathersservice
+     trigger:
+      branches:
+       include:
+         - main         
+stages:
+  # Development
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+    parameters:
+      environment: Development
+      stageName: Development
+      stageDependencies:
+        - ContainerImageBuild
+      deploymentPoolName: Homelabpool
+
+  # Test
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+    parameters:
+      environment: Test
+      stageName: Test
+      stageDependencies:
+        - Development
+      deploymentPoolName: Homelabpool
+
+  # DAST
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/dast/owasp-zap.yaml
+    parameters:
+      environment: Test
+      stageName: DAST
+      stageDependencies:
+        - Test
+      targetEndpoint: https://www.example.com
+      reportOutputPath: /home/vsts/work/1/a/zap_report.html
+
+  # # Production
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+  #   parameters:
+  #     environment: Production
+  #     stageName: Production
+  #     stageDependencies:
+  #       - DAST
+  #       - Test
+  #     deploymentPoolName: Homelabpool
+
+
+parameters:
+  - name: environment
+    displayName: Environment
+    type: string
+    default: Development
+  # - name: unitTestSourcesDirectory
+  #   displayName: Unit Test Sources Directory
+  #   type: string
+  #   default: ''
+  # - name: projectSourcesDirectory
+  #   displayName: Project Sources Directory
+  #   type: string
+  #   default: ''
+  - name: containerRegistryName
+    type: string
+    default: freddieentity.azurecr.io
+  - name: containerImageName
+    type: string
+    default: weatherservice
+  - name: containerImageTag
+    type: string
+    default: $(Build.BuildNumber)

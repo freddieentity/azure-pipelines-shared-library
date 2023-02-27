@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ado
+data:
+  AZP_URL: aHR0cHM6Ly9kZXYuYXp1cmUuY29tL2ZyZWRkaWVlbnRpdHk= # https://dev.azure.com/freddieentity
+  AZP_POOL: a2luZC1ob21lbGFi # kind-homelab
+  AZP_TOKEN: YTZyMmZycmdnYW9qaHZuMjJpd2tteG1mbmZkYjJrMm5qeXN2bG41eXN2am9mYTJubXRtcQ== # HomelabpoolPAT
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ado
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ado
+  namespace: ado
+  labels:
+    app: ado-agent
+spec:
+  replicas: 2 #here is the configuration for the actual agent always running
+  selector:
+    matchLabels:
+      app: ado-agent
+  template:
+    metadata:
+      labels:
+        app: ado-agent
+    spec:
+      containers:
+      - name: ado-agent
+        image: dockeragent:latest
+        env:
+          - name: AZP_URL
+            valueFrom:
+              secretKeyRef:
+                name: ado
+                key: AZP_URL
+          - name: AZP_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: ado
+                key: AZP_TOKEN
+          - name: AZP_POOL
+            valueFrom:
+              secretKeyRef:
+                name: ado
+                key: AZP_POOL
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: docker-volume
+      volumes:
+      - name: docker-volume
+        hostPath:
+          path: /var/run/docker.sock

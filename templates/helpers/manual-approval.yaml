@@ -1,0 +1,12 @@
+jobs:
+- job: manual_approval
+  displayName: "Manual Approval"
+  pool: server
+  steps:
+  - task: ManualValidation@0
+    timeoutInMinutes: 1440 # task times out in 1 day
+    inputs:
+      notifyUsers: |
+        [freddieentity]\HomeLab Admin 
+      instructions: 'Please validate the build configuration and resume'
+      onTimeout: 'reject'

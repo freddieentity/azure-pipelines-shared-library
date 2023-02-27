@@ -76,3 +76,14 @@ https://learn.microsoft.com/en-us/azure/architecture/microservices/ci-cd-kuberne
 ![Build a CI/CD pipeline for microservices on Kubernetes with Azure DevOps and Helm](https://learn.microsoft.com/en-us/azure/architecture/microservices/images/aks-cicd-flow.png)
 
 https://learn.microsoft.com/en-us/azure/devops/pipelines/process/environments-kubernetes?view=azure-devops
+
+- opening pull request EVENT triggers CI
+- merging pull request EVENT triggers CD
+———
+- there is nothing called dev/qa environments, but it’s PREVIEW environment ( per pull request) . The environment dies when the Pull request is approved ( even before merged ) which a 3rd EVENT.
+- Prod of v1 becomes staging of v2 called also blue .. prod of v2 is green ..it’s promotion
+———
+- Do not allow manual versioning , but auto-calculate it from semantic git commits
+- Use the auto-calculated version everywhere to Tag everything
+———
+- Do not rollback DB by SQL scripts but by Point-in-time recovery ( DB snapshot)

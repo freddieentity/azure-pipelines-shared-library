@@ -55,15 +55,15 @@ stages:
           command: logout
           containerRegistry: $(CONTAINER_REGISTRY_CREDENTIALS)
 
-      # - task: AzureCLI@2
-      #   displayName: 'ACR - lock production image'
-      #   condition: eq(variables.isTag, 'True')
-      #   inputs:
-      #     azureSubscription: $(armConnection)
-      #     scriptType: bash
-      #     scriptLocation: inlineScript
-      #     inlineScript: |
-      #       az acr repository update \
-      #         --name $(dockerRegistry) \
-      #         --image $(imageName):$(imageTag) \
-      #         --write-enabled false
+      - task: AzureCLI@2
+        displayName: 'ACR - lock production image'
+        condition: eq(variables.IS_TAG, 'True')
+        inputs:
+          azureSubscription: $(ARM_CONNECTION)
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            az acr repository update \
+              --name ${{ parameters.containerRegistryName }} \
+              --image ${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} \
+              --write-enabled false

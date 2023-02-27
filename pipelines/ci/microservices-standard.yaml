@@ -6,50 +6,7 @@
 # Integration tests
 # Publish build artifacts
 # Publish container image
-parameters:
-  - name: environment
-    displayName: Environment
-    type: string
-    default: Development
-  # - name: unitTestSourcesDirectory
-  #   displayName: Unit Test Sources Directory
-  #   type: string
-  #   default: ''
-  # - name: projectSourcesDirectory
-  #   displayName: Project Sources Directory
-  #   type: string
-  #   default: ''
-  - name: containerRegistryName
-    type: string
-    default: freddieentity.azurecr.io
-  - name: containerImageName
-    type: string
-    default: weatherservice
-  - name: containerImageTag
-    type: string
-    default: $(Build.BuildNumber)
-  - name: enableUnitTest
-    type: boolean
-    default: true
-  - name: enableSCA
-    type: boolean
-    default: true
-  - name: enableSAST
-    type: boolean
-    default: true
-  - name: enableContainerImageBuild
-    type: boolean
-    default: true
-  - name: enableContainerImageScan
-    type: boolean
-    default: true
-  - name: enableDeployment
-    type: boolean
-    default: true
-  - name: enableDAST
-    type: boolean
-    default: true
-
+name: $(MICROSERVICE_NAME)
 stages:
   # UnitTest
   - ${{ if eq(parameters.enableUnitTest, true) }}:
@@ -103,8 +60,8 @@ stages:
         containerImageName: ${{ parameters.containerImageName }}
         containerImageTag: ${{ parameters.containerImageTag }}
 
-  # Development
-  - ${{ if eq(parameters.enableDeployment, true) }}:
+  # Deployment
+  - ${{ if eq(parameters.enablePreviewDeployment, true) }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
       parameters:
         environment: Development
@@ -113,33 +70,44 @@ stages:
           - ContainerImageBuild
         deploymentPoolName: Homelabpool
 
-  # Test
-  - ${{ if eq(parameters.enableDeployment, true) }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
-      parameters:
-        environment: Test
-        stageName: Test
-        stageDependencies:
-          - Development
-        deploymentPoolName: Homelabpool
 
-  # DAST
-  - ${{ if eq(parameters.enableDAST, true) }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/dast/owasp-zap.yaml
-      parameters:
-        environment: Test
-        stageName: DAST
-        stageDependencies:
-          - Test
-        targetEndpoint: https://www.example.com
-        reportOutputPath: /home/vsts/work/1/a/zap_report.html
-
-  # # Production
-  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
-  #   parameters:
-  #     environment: Production
-  #     stageName: Production
-  #     stageDependencies:
-  #       - DAST
-  #       - Test
-  #     deploymentPoolName: Homelabpool
+parameters:
+  - name: environment
+    displayName: Environment
+    type: string
+    default: Development
+  # - name: unitTestSourcesDirectory
+  #   displayName: Unit Test Sources Directory
+  #   type: string
+  #   default: ''
+  # - name: projectSourcesDirectory
+  #   displayName: Project Sources Directory
+  #   type: string
+  #   default: ''
+  - name: containerRegistryName
+    type: string
+    default: freddieentity.azurecr.io
+  - name: containerImageName
+    type: string
+    default: weatherservice
+  - name: containerImageTag
+    type: string
+    default: $(Build.BuildNumber)
+  - name: enableUnitTest
+    type: boolean
+    default: true
+  - name: enableSCA
+    type: boolean
+    default: true
+  - name: enableSAST
+    type: boolean
+    default: true
+  - name: enableContainerImageBuild
+    type: boolean
+    default: true
+  - name: enableContainerImageScan
+    type: boolean
+    default: true
+  - name: enablePreviewDeployment
+    type: boolean
+    default: true
