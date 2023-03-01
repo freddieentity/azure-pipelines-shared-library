@@ -10,14 +10,14 @@ stages:
   # UnitTest
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
     parameters:
-      enabled: enableUnitTest
+      enabled: ${{ parameters.enableUnitTest }}
       stageName: UnitTest
       stageDependencies: 
 
   # SCA
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
     parameters:
-      enabled: enableSCA
+      enabled: ${{ parameters.enableSCA }}
       stageName: SCA
       stageDependencies:
         - UnitTest
@@ -25,7 +25,7 @@ stages:
   # SAST
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
     parameters:
-      enabled: enableSAST
+      enabled: ${{ parameters.enableSAST }}
       stageName: SAST
       stageDependencies:
         - UnitTest
@@ -38,7 +38,7 @@ stages:
   # Build
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
     parameters:
-      enabled: enableContainerImageBuild
+      enabled: ${{ parameters.enableContainerImageBuild }}
       stageName: ContainerImageBuild
       stageDependencies:
         - SCA
@@ -50,7 +50,7 @@ stages:
   # Container Image Scan
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
     parameters:
-      enabled: enableContainerImageScan
+      enabled: ${{ parameters.enableContainerImageScan }}
       stageName: ContainerImageScan
       stageDependencies:
         - ContainerImageBuild
@@ -63,7 +63,7 @@ stages:
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:
       environment: Development
-      enabled: enablePreviewDeployment
+      enabled: ${{ parameters.enablePreviewDeployment }}
       stageName: Development
       stageDependencies:
         - ContainerImageBuild
