@@ -8,66 +8,66 @@
 # Publish container image
 stages:
   # UnitTest
-  - ${{ if eq(parameters.enableUnitTest, true) }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
-      parameters:
-        stageName: UnitTest
-        stageDependencies: 
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
+    parameters:
+      enabled: enableUnitTest
+      stageName: UnitTest
+      stageDependencies: 
 
   # SCA
-  - ${{ if eq(parameters.enableSCA, true) }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
-      parameters:
-        stageName: SCA
-        stageDependencies:
-          - UnitTest
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
+    parameters:
+      enabled: enableSCA
+      stageName: SCA
+      stageDependencies:
+        - UnitTest
 
   # SAST
-  - ${{ if eq(parameters.enableSAST, true) }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
-      parameters:
-        stageName: SAST
-        stageDependencies:
-          - UnitTest
-        sonarQubeToken: 4ae523f01ada58d6b50e1667024d06494989a1c9
-        sonarQubeOrganization: freddieentity
-        sonarQubeProjectKey: complete-cicd
-        sonarQubeSources: $(Pipeline.Workspace)
-        sonarQubeHostURL: https://sonarcloud.io
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
+    parameters:
+      enabled: enableSAST
+      stageName: SAST
+      stageDependencies:
+        - UnitTest
+      sonarQubeToken: 4ae523f01ada58d6b50e1667024d06494989a1c9
+      sonarQubeOrganization: freddieentity
+      sonarQubeProjectKey: complete-cicd
+      sonarQubeSources: $(Pipeline.Workspace)
+      sonarQubeHostURL: https://sonarcloud.io
 
   # Build
-  - ${{ if eq(parameters.enableContainerImageBuild, true) }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
-      parameters:
-        stageName: ContainerImageBuild
-        stageDependencies:
-          - SCA
-          - SAST
-        containerRegistryName: ${{ parameters.containerRegistryName }}
-        containerImageName: ${{ parameters.containerImageName }}
-        containerImageTag: ${{ parameters.containerImageTag }}
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
+    parameters:
+      enabled: enableContainerImageBuild
+      stageName: ContainerImageBuild
+      stageDependencies:
+        - SCA
+        - SAST
+      containerRegistryName: ${{ parameters.containerRegistryName }}
+      containerImageName: ${{ parameters.containerImageName }}
+      containerImageTag: ${{ parameters.containerImageTag }}
 
   # Container Image Scan
-  - ${{ if eq(parameters.enableContainerImageScan, true) }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
-      parameters:
-        stageName: ContainerImageScan
-        stageDependencies:
-          - ContainerImageBuild
-        trivyTemplatePath: https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl
-        containerRegistryName: ${{ parameters.containerRegistryName }}
-        containerImageName: ${{ parameters.containerImageName }}
-        containerImageTag: ${{ parameters.containerImageTag }}
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
+    parameters:
+      enabled: enableContainerImageScan
+      stageName: ContainerImageScan
+      stageDependencies:
+        - ContainerImageBuild
+      trivyTemplatePath: https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl
+      containerRegistryName: ${{ parameters.containerRegistryName }}
+      containerImageName: ${{ parameters.containerImageName }}
+      containerImageTag: ${{ parameters.containerImageTag }}
 
   # Deployment
-  - ${{ if eq(parameters.enablePreviewDeployment, true) }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
-      parameters:
-        environment: Development
-        stageName: Development
-        stageDependencies:
-          - ContainerImageBuild
-        deploymentPoolName: Homelabpool
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+    parameters:
+      environment: Development
+      enabled: enablePreviewDeployment
+      stageName: Development
+      stageDependencies:
+        - ContainerImageBuild
+      deploymentPoolName: Homelabpool
 
 
 parameters:

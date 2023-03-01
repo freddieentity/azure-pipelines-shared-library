@@ -2,6 +2,9 @@ parameters:
 - name: environment
   type: string
   default: dev
+- name: enabled
+  type: boolean
+  default: true
 - name: stageName
   type: string
   default: ''

@@ -1,7 +1,7 @@
 parameters:
-- name: environment
-  type: string
-  default: dev
+- name: enabled
+  type: boolean
+  default: true
 - name: stageName
   type: string
   default: ''
@@ -11,7 +11,7 @@ parameters:
 stages:
   - stage: ${{ parameters.stageName }}
     displayName: ${{ parameters.stageName }}
-    # condition: 
+    condition: eq(${{ parameters.enabled }}, 'true')
     dependsOn: ${{ parameters.stageDependencies }}
     # pool:
     jobs:
