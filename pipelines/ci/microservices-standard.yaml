@@ -6,7 +6,6 @@
 # Integration tests
 # Publish build artifacts
 # Publish container image
-name: $(MICROSERVICE_NAME)
 stages:
   # UnitTest
   - ${{ if eq(parameters.enableUnitTest, true) }}:
