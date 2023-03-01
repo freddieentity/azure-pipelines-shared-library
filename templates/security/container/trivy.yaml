@@ -44,7 +44,7 @@ stages:
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(Build.ArtifactStagingDirectory)**/junit*.xml'
+          testResultsFiles: '$(Build.ArtifactStagingDirectory)/junit*.xml'
           mergeTestResults: true
           failTaskOnFailedTests: false
           testRunTitle: 'Trivy Vulnerabilities Report'
