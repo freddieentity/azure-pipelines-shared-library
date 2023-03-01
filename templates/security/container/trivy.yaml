@@ -44,13 +44,13 @@ stages:
         displayName: Trivy Publish Artifact Staging Directory
         inputs:
           pathToPublish: '$(Build.ArtifactStagingDirectory)'
-          artifactName: 'drop'
+          artifactName: 'Trivy'
           publishLocation: 'Container'
 
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(Build.ArtifactStagingDirectory)/junit*.xml'
+          testResultsFiles: '$(Build.ArtifactStagingDirectory)/Trivy/junit*.xml'
           mergeTestResults: true
           failTaskOnFailedTests: false
           testRunTitle: 'Trivy Vulnerabilities Report'

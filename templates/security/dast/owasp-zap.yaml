@@ -36,4 +36,4 @@ stages:
         displayName: Zap Report Export
         inputs:
           pathToPublish: '$(Build.ArtifactStagingDirectory)'
-          artifactName: zap_report.html
+          artifactName: OWASPZAP
