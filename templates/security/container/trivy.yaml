@@ -44,7 +44,8 @@ stages:
         displayName: Trivy Publish Artifact Staging Directory
         inputs:
           pathToPublish: '$(Build.ArtifactStagingDirectory)'
-          artifactName: 'junit*.xml'
+          artifactName: 'drop'
+          publishLocation: 'Container'
 
       - task: PublishTestResults@2
         inputs:

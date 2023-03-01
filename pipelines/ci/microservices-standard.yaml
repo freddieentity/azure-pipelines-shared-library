@@ -59,7 +59,7 @@ stages:
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
 
-  # Deployment
+  # Preview Deployment
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:
       environment: Development
