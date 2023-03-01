@@ -59,7 +59,7 @@ stages:
         displayName: 'ACR - lock production image'
         condition: eq(variables.IS_TAG, 'True')
         inputs:
-          azureSubscription: $(ARM_CONNECTION)
+          azureSubscription: $(SC_ARM)
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |

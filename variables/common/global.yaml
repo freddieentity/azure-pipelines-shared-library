@@ -50,5 +50,5 @@ variables:
   PROMETHEUS_ADDR: ${PROMETHEUS_SERVICE_HOST}:${PROMETHEUS_SERVICE_PORT}
 
   # To be overwritten by each environment YAML
-  ARM_CONNECTION: unset
-  KUBERNETES_CLUSTER: unset
+  SC_ARM: SC NonProd ARM
+  KUBERNETES_CLUSTER: SC NonProd K8S
