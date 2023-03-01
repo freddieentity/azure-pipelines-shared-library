@@ -56,7 +56,7 @@ stages:
           containerRegistry: $(CONTAINER_REGISTRY_CREDENTIALS)
 
       - task: AzureCLI@2
-        displayName: 'ACR - lock production image'
+        displayName: 'Lock release candidate image'
         condition: eq(variables.IS_TAG, 'True')
         inputs:
           azureSubscription: $(SC_ARM)
