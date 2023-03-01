@@ -38,9 +38,13 @@ stages:
       - bash: |
           trivy image --severity LOW,MEDIUM --format template --template ${{ parameters.trivyTemplatePath }} -o $(Build.ArtifactStagingDirectory)/junit-report-low-med.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}         
           trivy image --severity HIGH,CRITICAL --format template --template ${{ parameters.trivyTemplatePath }} -o $(Build.ArtifactStagingDirectory)/junit-report-high-crit.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} 
-          ls $(Build.ArtifactStagingDirectory)
         displayName: Trivy Container Image Scanning
 
+      - task: PublishBuildArtifacts@1
+        displayName: Trivy Publish Artifact Staging Directory
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)'
+          artifactName: '**/junit*.xml'
 
       - task: PublishTestResults@2
         inputs:
@@ -50,4 +54,4 @@ stages:
           failTaskOnFailedTests: false
           testRunTitle: 'Trivy Vulnerabilities Report'
         condition: 'always()'
-        displayName: Trivy Report Export
+        displayName: Trivy Report Visualization
