@@ -38,6 +38,7 @@ stages:
       - bash: |
           trivy image --severity LOW,MEDIUM --format template --template ${{ parameters.trivyTemplatePath }} -o $(Build.ArtifactStagingDirectory)/junit-report-low-med.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}         
           trivy image --severity HIGH,CRITICAL --format template --template ${{ parameters.trivyTemplatePath }} -o $(Build.ArtifactStagingDirectory)/junit-report-high-crit.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} 
+          ls $(Build.ArtifactStagingDirectory)
         displayName: Trivy Container Image Scanning
 
 

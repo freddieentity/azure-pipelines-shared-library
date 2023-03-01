@@ -52,3 +52,5 @@ variables:
   # To be overwritten by each environment YAML
   SC_ARM: SC NonProd ARM
   KUBERNETES_CLUSTER: SC NonProd K8S
+
+  # Tagging strategies
