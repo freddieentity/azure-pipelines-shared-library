@@ -9,7 +9,7 @@ parameters:
   type: string
 - name: trivyTemplatePath
   type: string
-  default: ''
+  default: 'https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl'
 - name: containerRegistryName
   type: string
 - name: containerImageName
