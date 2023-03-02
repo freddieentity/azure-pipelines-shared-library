@@ -36,7 +36,7 @@ stages:
         displayName: Trivy Installation
       
       - bash: |
-          trivy image --severity LOW,MEDIUM,HIGH,CRITICAL --format template --template @${{ parameters.trivyTemplatePath }} -o $(Build.ArtifactStagingDirectory)/junit-trivy.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}         
+          trivy image --severity LOW,MEDIUM,HIGH,CRITICAL --format template --template @${{ parameters.trivyTemplatePath }} -o junit-trivy.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}         
         displayName: Trivy Container Image Scanning
 
       # - task: PublishBuildArtifacts@1
@@ -56,7 +56,7 @@ stages:
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.ArtifactsDirectory)/Trivy/junit*'
+          testResultsFiles: '**/junit*.xml'
           mergeTestResults: true
           failTaskOnFailedTests: false
           testRunTitle: 'Trivy Vulnerabilities Report'
