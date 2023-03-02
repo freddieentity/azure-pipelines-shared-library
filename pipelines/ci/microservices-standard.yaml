@@ -54,7 +54,7 @@ stages:
       stageName: ContainerImageScan
       stageDependencies:
         - ContainerImageBuild
-      trivyTemplatePath: "https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl"
+      trivyTemplatePath: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.tpl
       containerRegistryName: ${{ parameters.containerRegistryName }}
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
