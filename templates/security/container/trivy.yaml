@@ -46,11 +46,18 @@ stages:
           pathToPublish: '$(Build.ArtifactStagingDirectory)'
           artifactName: 'Trivy'
           publishLocation: 'Container'
+          
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          downloadPath: '$(System.ArtifactsDirectory)'
+          artifactName: 'Trivy'
 
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(Build.ArtifactStagingDirectory)/Trivy/junit*.xml'
+          testResultsFiles: '$(System.ArtifactsDirectory)/Trivy/junit*.xml'
           mergeTestResults: true
           failTaskOnFailedTests: false
           testRunTitle: 'Trivy Vulnerabilities Report'

@@ -34,6 +34,14 @@ stages:
         - Development
       deploymentPoolName: Homelabpool
 
+  # Automation Test
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/automation-test.yaml
+    parameters:
+      environment: Test
+      stageName: AutomationTest
+      stageDependencies:
+        - Test
+
   # DAST
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/dast/owasp-zap.yaml
     parameters:
