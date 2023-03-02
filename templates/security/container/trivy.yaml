@@ -9,7 +9,7 @@ parameters:
   type: string
 - name: trivyTemplatePath
   type: string
-  default: 'https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl'
+  default: ''
 - name: containerRegistryName
   type: string
 - name: containerImageName
@@ -32,32 +32,31 @@ stages:
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
           echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update
-          sudo apt-get install trivy
+          sudo apt-get install trivy  
         displayName: Trivy Installation
       
       - bash: |
-          trivy image --severity LOW,MEDIUM --format template --template ${{ parameters.trivyTemplatePath }} -o $(Build.ArtifactStagingDirectory)/junit-report-low-med.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}         
-          trivy image --severity HIGH,CRITICAL --format template --template ${{ parameters.trivyTemplatePath }} -o $(Build.ArtifactStagingDirectory)/junit-report-high-crit.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} 
+          trivy image --severity LOW,MEDIUM,HIGH,CRITICAL --format template --template @${{ parameters.trivyTemplatePath }} -o $(Build.ArtifactStagingDirectory)/junit-trivy.xml ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}         
         displayName: Trivy Container Image Scanning
 
-      - task: PublishBuildArtifacts@1
-        displayName: Trivy Publish Artifact Staging Directory
-        inputs:
-          pathToPublish: '$(Build.ArtifactStagingDirectory)'
-          artifactName: 'Trivy'
-          publishLocation: 'Container'
-          
-      - task: DownloadBuildArtifacts@0
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          downloadPath: '$(System.ArtifactsDirectory)'
-          artifactName: 'Trivy'
+      # - task: PublishBuildArtifacts@1
+      #   displayName: Trivy Publish Artifact Staging Directory
+      #   inputs:
+      #     pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      #     artifactName: 'Trivy'
+      #     publishLocation: 'Container'
+
+      # - task: DownloadBuildArtifacts@0
+      #   inputs:
+      #     buildType: 'current'
+      #     downloadType: 'single'
+      #     downloadPath: '$(System.ArtifactsDirectory)'
+      #     artifactName: 'Trivy'
 
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
-          testResultsFiles: '$(System.ArtifactsDirectory)/Trivy/junit*.xml'
+          testResultsFiles: '$(System.ArtifactsDirectory)/Trivy/junit*'
           mergeTestResults: true
           failTaskOnFailedTests: false
           testRunTitle: 'Trivy Vulnerabilities Report'
