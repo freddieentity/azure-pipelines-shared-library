@@ -66,16 +66,16 @@ stages:
     #       instructions: 'Please validate the deployment and resume'
     #       onTimeout: 'reject'
 
-    - job: Rollback
-      displayName: Rollback
-      environment: ${{ parameters.environment }}
-      steps:
-        - bash: |
-            helm history processingservice
-            helm rollback processingservice 0
-            helm history processingservice
+    # - job: Rollback
+    #   displayName: Rollback
+    #   environment: ${{ parameters.environment }}
+    #   steps:
+    #     - bash: |
+    #         helm history processingservice
+    #         helm rollback processingservice 0
+    #         helm history processingservice
           
-          displayName: Helm Rollback
+    #       displayName: Helm Rollback
               
             
                 
