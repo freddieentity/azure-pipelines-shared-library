@@ -21,8 +21,6 @@ stages:
     parameters:
       environment: Development
       stageName: Development
-      stageDependencies:
-        - ContainerImageBuild
       deploymentPoolName: Homelabpool
 
   # Test
