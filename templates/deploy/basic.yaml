@@ -33,3 +33,6 @@ stages:
             steps:
             - bash: |
                 echo 'Deploying to ${{ parameters.stageName }} ...'
+                kubectl cluster-info
+                kubectl get nodes
+                

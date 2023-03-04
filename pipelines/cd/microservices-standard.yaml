@@ -14,7 +14,10 @@ trigger: none
 #      trigger:
 #       branches:
 #        include:
-#          - main         
+#          - main    
+variables:
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml
+
 stages:
   # Development
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
@@ -47,16 +50,23 @@ stages:
         - Test
       targetEndpoint: https://www.example.com
       reportOutputPath: /home/vsts/work/1/a/zap_report.html
-
-  # # Production
-  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
-  #   parameters:
-  #     environment: Production
-  #     stageName: Production
-  #     stageDependencies:
-  #       - DAST
-  #       - Test
-  #     deploymentPoolName: Homelabpool
+        
+  # Staging   
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+    parameters:
+      environment: Staging
+      stageName: Staging
+      stageDependencies:
+        - Test
+      deploymentPoolName: Homelabpool
+  # Production
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+    parameters:
+      environment: Production
+      stageName: Production
+      stageDependencies:
+        - Staging
+      deploymentPoolName: Homelabpool
 
 
 parameters:
