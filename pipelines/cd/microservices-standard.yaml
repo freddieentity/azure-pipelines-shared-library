@@ -6,15 +6,15 @@
 trigger: none
 resources:
   # containers:
-  # - container: linuxsqlpackage
-  #   image: wolfgangofner/linuxsqlpackage:1.0
-  pipelines:
-   - pipeline: weathersservice
-     source: weathersservice
-     trigger:
-      branches:
-       include:
-         - main         
+  # - container: freddieentity
+  #   image: freddieentity.azurecr.io/adservice:1.0
+  # pipelines:
+  #  - pipeline: adservice
+  #    source: adservice
+  #    trigger:
+  #     branches:
+  #      include:
+  #        - main         
 stages:
   # Development
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
