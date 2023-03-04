@@ -59,6 +59,7 @@ stages:
       stageDependencies:
         - Test
       deploymentPoolName: Homelabpool
+      
   # Production
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:

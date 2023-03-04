@@ -35,4 +35,47 @@ stages:
                 echo 'Deploying to ${{ parameters.stageName }} ...'
                 kubectl cluster-info
                 kubectl get nodes
+
+              displayName: Cluster Check
+
+            - checkout: git://HomeLab/online-boutique-helm-charts
+
+            - bash: |
+                helm upgrade -i processingservice ./processingservice \
+                --set "ingress.hosts[0].host=abc.127.0.0.1.nip.io,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix"
+
+              displayName: Helm Install 
+            
+            # - bash: |
+            #     helm history processingservice
+            #     helm rollback processingservice 0
+            #     helm history processingservice
+
+            #   displayName: Helm Rollback
+            #   condition: failed()
+
+    # - job: ManualApproval
+    #   displayName: "ManualApproval"
+    #   pool: server
+    #   steps:
+    #   - task: ManualValidation@0
+    #     timeoutInMinutes: 1440 # task times out in 1 day
+    #     inputs:
+    #       notifyUsers: |
+    #         [freddieentity]\HomeLab Admin
+    #       instructions: 'Please validate the deployment and resume'
+    #       onTimeout: 'reject'
+
+    - job: Rollback
+      displayName: Rollback
+      environment: ${{ parameters.environment }}
+      steps:
+        - bash: |
+            helm history processingservice
+            helm rollback processingservice 0
+            helm history processingservice
+          
+          displayName: Helm Rollback
+              
+            
                 
