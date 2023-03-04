@@ -37,7 +37,6 @@ stages:
   # Automation Test
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/automation-test.yaml
     parameters:
-      environment: Test
       stageName: AutomationTest
       stageDependencies:
         - Test
