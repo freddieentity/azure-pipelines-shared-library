@@ -41,7 +41,7 @@ stages:
             - checkout: git://HomeLab/online-boutique-helm-charts
 
             - bash: |
-                helm upgrade -i processingservice ./processingservice \
+                helm upgrade -i processingservice $(Agent.BuildDirectory)/s/processingservice \
                 --set "ingress.hosts[0].host=abc.127.0.0.1.nip.io,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix"
 
               displayName: Helm Install 
