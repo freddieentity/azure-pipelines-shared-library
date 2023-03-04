@@ -44,7 +44,6 @@ stages:
   # DAST
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/dast/owasp-zap.yaml
     parameters:
-      environment: Test
       stageName: DAST
       stageDependencies:
         - Test
