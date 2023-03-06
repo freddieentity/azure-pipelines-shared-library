@@ -27,6 +27,7 @@ stages:
       environment: Development
       stageName: Development
       deploymentPoolName: Homelabpool
+      microserviceName: weatherservice
 
   # Test
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
@@ -36,6 +37,7 @@ stages:
       stageDependencies:
         - Development
       deploymentPoolName: Homelabpool
+      microserviceName: weatherservice
 
   # Automation Test
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/automation-test.yaml
@@ -61,6 +63,7 @@ stages:
       stageDependencies:
         - Test
       deploymentPoolName: Homelabpool
+      microserviceName: weatherservice
 
   # Production
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
@@ -70,6 +73,7 @@ stages:
       stageDependencies:
         - Staging
       deploymentPoolName: Homelabpool
+      microserviceName: weatherservice
 
 
 parameters:

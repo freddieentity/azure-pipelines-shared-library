@@ -14,9 +14,8 @@ parameters:
 - name: deploymentPoolName
   type: string
   default: 'Homelabpool'
-
-variables:
-  MICROSERVICE_NAME: weatherservice
+- name: microserviceName
+  type: string
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -44,7 +43,7 @@ stages:
             - checkout: git://HomeLab/online-boutique-helm-charts
 
             - bash: | # when checkout one repo, the repo itself will be cloned to $(Agent.BuildDirectory)/s/
-                helm upgrade -i $(MICROSERVICE_NAME) $(Agent.BuildDirectory)/s/$(MICROSERVICE_NAME) \
+                helm upgrade -i $(microserviceName) $(Agent.BuildDirectory)/s/$(microserviceName) \
                 --set "ingress.hosts[0].host=abc.127.0.0.1.nip.io,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix"
 
               displayName: Helm Install 
@@ -61,9 +60,9 @@ stages:
                 chartName:
             
             # - bash: |
-            #     helm history $(MICROSERVICE_NAME)
-            #     helm rollback $(MICROSERVICE_NAME) 0
-            #     helm history $(MICROSERVICE_NAME)
+            #     helm history $(microserviceName)
+            #     helm rollback $(microserviceName) 0
+            #     helm history $(microserviceName)
 
             #   displayName: Helm Rollback
             #   condition: failed()
@@ -85,9 +84,9 @@ stages:
     #   environment: ${{ parameters.environment }}
     #   steps:
     #     - bash: |
-    #         helm history $(MICROSERVICE_NAME)
-    #         helm rollback $(MICROSERVICE_NAME) 0
-    #         helm history $(MICROSERVICE_NAME)
+    #         helm history $(microserviceName)
+    #         helm rollback $(microserviceName) 0
+    #         helm history $(microserviceName)
           
     #       displayName: Helm Rollback
               
