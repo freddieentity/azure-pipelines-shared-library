@@ -4,17 +4,19 @@
 # Manual intervention (optional)
 # Release
 trigger: none
-# resources:
-#   # containers:
-#   # - container: freddieentity
-#   #   image: freddieentity.azurecr.io/adservice:1.0
-#   pipelines:
-#    - pipeline: adservice
-#      source: adservice
-#      trigger:
-#       branches:
-#        include:
-#          - main    
+resources:
+  # containers:
+  # - container: freddieentity
+  #   image: freddieentity.azurecr.io/adservice:1.0
+  pipelines:
+   - pipeline: processingservice
+     source: processingservice
+     trigger:
+      branches:
+       include:
+         - main
+         - releases/*  
+         - features/*
 variables:
   - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml
 
@@ -59,7 +61,7 @@ stages:
       stageDependencies:
         - Test
       deploymentPoolName: Homelabpool
-      
+
   # Production
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
     parameters:

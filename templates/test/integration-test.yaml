@@ -1,0 +1,23 @@
+parameters:
+- name: enabled
+  type: boolean
+  default: true
+- name: stageName
+  type: string
+  default: ''
+- name: stageDependencies 
+  type: object 
+
+stages:
+  - stage: ${{ parameters.stageName }}
+    displayName: ${{ parameters.stageName }}
+    condition: eq(${{ parameters.enabled }}, 'true')
+    dependsOn: ${{ parameters.stageDependencies }}
+    # pool:
+    jobs:
+    - job: IntegrationTest
+      displayName: Integration Test
+      steps:
+      - bash: |
+          echo 'Integration Test...'
+        displayName: Integration Test
