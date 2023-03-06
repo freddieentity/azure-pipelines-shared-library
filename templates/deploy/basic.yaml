@@ -43,7 +43,7 @@ stages:
             - checkout: git://HomeLab/online-boutique-helm-charts
 
             - bash: | # when checkout one repo, the repo itself will be cloned to $(Agent.BuildDirectory)/s/
-                helm upgrade -i $(microserviceName) $(Agent.BuildDirectory)/s/$(microserviceName) \
+                helm upgrade -i ${{ parameters.microserviceName }} $(Agent.BuildDirectory)/s/${{ parameters.microserviceName }} \
                 --set "ingress.hosts[0].host=abc.127.0.0.1.nip.io,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix"
 
               displayName: Helm Install 
@@ -60,9 +60,9 @@ stages:
                 chartName:
             
             # - bash: |
-            #     helm history $(microserviceName)
-            #     helm rollback $(microserviceName) 0
-            #     helm history $(microserviceName)
+            #     helm history ${{ parameters.microserviceName }}
+            #     helm rollback ${{ parameters.microserviceName }} 0
+            #     helm history ${{ parameters.microserviceName }}
 
             #   displayName: Helm Rollback
             #   condition: failed()
@@ -84,9 +84,9 @@ stages:
     #   environment: ${{ parameters.environment }}
     #   steps:
     #     - bash: |
-    #         helm history $(microserviceName)
-    #         helm rollback $(microserviceName) 0
-    #         helm history $(microserviceName)
+    #         helm history ${{ parameters.microserviceName }}
+    #         helm rollback ${{ parameters.microserviceName }} 0
+    #         helm history ${{ parameters.microserviceName }}
           
     #       displayName: Helm Rollback
               
