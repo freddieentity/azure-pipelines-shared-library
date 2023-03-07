@@ -9,8 +9,8 @@ resources:
   # - container: freddieentity
   #   image: freddieentity.azurecr.io/adservice:1.0
   pipelines:
-   - pipeline: processingservice
-     source: processingservice
+   - pipeline: onlineboutique-weatherservice
+     source: onlineboutique-weatherservice
      trigger:
       branches:
        include:
