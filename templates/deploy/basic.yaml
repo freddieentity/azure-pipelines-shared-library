@@ -33,31 +33,25 @@ stages:
         runOnce:
           deploy:
             steps:
-            - bash: |
-                echo 'Deploying to ${{ parameters.stageName }} ...'
-                kubectl cluster-info
-                kubectl get nodes
-
-              displayName: Cluster Check
-
             - checkout: git://HomeLab/online-boutique-helm-charts
 
-            - bash: | # when checkout one repo, the repo itself will be cloned to $(Agent.BuildDirectory)/s/
-                helm upgrade -i ${{ parameters.microserviceName }} $(Agent.BuildDirectory)/s/${{ parameters.microserviceName }} \
-                --set "ingress.hosts[0].host=abc.127.0.0.1.nip.io,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix"
-
-              displayName: Helm Install 
+            # - bash: | # when checkout one repo, the repo itself will be cloned to $(Agent.BuildDirectory)/s/
+            #     helm upgrade -i ${{ parameters.microserviceName }} $(Agent.BuildDirectory)/s/${{ parameters.microserviceName }} \
+            #     --set "ingress.hosts[0].host=abc.127.0.0.1.nip.io,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix"
+ 
+            #   displayName: Helm Install
             
             - task: HelmDeploy@0
               inputs:
                 connectionType: 'Azure Resource Manager' # 'Azure Resource Manager' | 'Kubernetes Service Connection' | 'None'. Required. Connection Type. Default: Azure Resource Manager.
-                azureSubscription: # 
-                azureResourceGroup: # string. Required when connectionType = Azure Resource Manager. Resource group. 
-                kubernetesCluster: # string. Required when connectionType = Azure Resource Manager. Kubernetes cluster. 
-                namespace: # string. Namespace. 
-                command: 'ls' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
+                azureSubscription: $(SC_ARM)
+                azureResourceGroup: 'rg-homelab-online-boutique'
+                kubernetesCluster: 'aks-homelab-online-boutique'
+                namespace: 'default'
+                command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
                 #chartType: 'Name' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
-                chartName:
+                releaseName: ${{ parameters.microserviceName }}
+                chartPath: $(Agent.BuildDirectory)/s/${{ parameters.microserviceName }}
             
             # - bash: |
             #     helm history ${{ parameters.microserviceName }}

@@ -15,7 +15,8 @@ resources:
       branches:
        include:
          - main
-         - releases/*  
+         - develop
+         - releases/*
          - features/*
 variables:
   - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml

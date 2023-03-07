@@ -14,7 +14,7 @@ parameters:
   type: string
 - name: containerImageTag
   type: string
-  default: $(Build.BuildId)
+  default: $(Build.BuildNumber)
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -71,13 +71,15 @@ stages:
       # - task: HelmDeploy@0
       #   inputs:
       #       command: package
-      #       chartPath: $(chartPath)
-      #       chartVersion: $(Build.SourceBranchName)
-      #       arguments: '--app-version $(Build.SourceBranchName)'
+      #       # chartPath: $(repositoryExact)/charts/$(repository)
+      #       chartPath: $(repositoryExact)/charts/$(repository)
+      #       chartVersion: $(Build.BuildId)
+      #       destination: $(Build.ArtifactStagingDirectory)
 
       # - task: AzureCLI@1
       #   inputs:
       #       azureSubscription: $(SC_ARM)
       #       scriptLocation: inlineScript
       #       inlineScript: |
-      #         az acr helm push $(System.ArtifactsDirectory)/${{ parameters.containerRegistryName }}-$(Build.SourceBranchName).tgz --name ${{ parameters.containerRegistryName }}
+      #         az acr helm push -n $(acrName) $(Build.ArtifactStagingDirectory)/$(repository)-$(Build.BuildId).tgz
+      #         az acr helm push $(System.ArtifactsDirectory)/${{ parameters.containerRegistryName }}/helm/-$(Build.SourceBranchName).tgz --name ${{ parameters.containerRegistryName }}
