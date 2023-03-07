@@ -33,7 +33,7 @@ stages:
         runOnce:
           deploy:
             steps:
-            - checkout: git://HomeLab/online-boutique-helm-charts
+            - checkout: git://HomeLab/onlineboutique-helm-charts
 
             # - bash: | # when checkout one repo, the repo itself will be cloned to $(Agent.BuildDirectory)/s/
             #     helm upgrade -i ${{ parameters.microserviceName }} $(Agent.BuildDirectory)/s/${{ parameters.microserviceName }} \
