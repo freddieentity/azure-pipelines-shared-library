@@ -8,16 +8,16 @@ resources:
   # containers:
   # - container: freddieentity
   #   image: freddieentity.azurecr.io/adservice:1.0
-  pipelines:
-   - pipeline: onlineboutique-weatherservice
-     source: onlineboutique-weatherservice
-     trigger:
-      branches:
-       include:
-         - main
-         - develop
-         - releases/*
-         - features/*
+  # pipelines:
+  #  - pipeline: onlineboutique-weatherservice
+  #    source: onlineboutique-weatherservice
+  #    trigger:
+  #     branches:
+  #      include:
+  #        - main
+  #        - develop
+  #        - releases/*
+  #        - features/*
 variables:
   - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml
 
