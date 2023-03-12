@@ -1,19 +1,56 @@
 version: "3.7"
 services:
-  zipkin:
-    image: openzipkin/zipkin
-    container_name: zipkin
-    ports:
-      - 9411:9411
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    command: ["--config=/etc/otel-collector-config.yml"]
+  loki:
+    image: grafana/loki:2.4.0
     volumes:
-      - ./opentelemetry/otel-collector-config.yml:/etc/otel-collector-config.yml
+      - ./loki:/etc/loki
     ports:
-      - "13133:13133" # health_check extension
-      - "9411" # Zipkin receiver
-      - "4317:4317" # OTLP receiver
+      - "3100:3100"
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+
+  fluent-bit: #https://github.com/thakkaryash94/docker-grafana-loki-fluent-bit-sample
+    image: grafana/fluent-bit-plugin-loki:latest
+    container_name: fluent-bit
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+    volumes:
+      - ./fluent-bit/:/fluent-bit/etc/
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+
+  grafana:
+    image: grafana/grafana:latest
+    user: "1000"
+    volumes:
+    - ./grafana:/var/lib/grafana
+    ports:
+      - "3000:3000" #you might need to change this
+    restart: unless-stopped
+  # app:
+  #   image: kodekloud/event-simulator
+  #   container_name: event-simulator
+    # logging:
+    #   driver: fluentd
+    #   options:
+    #     fluentd-address: fluent-bit:24224
+    
+  # zipkin:
+  #   image: openzipkin/zipkin
+  #   container_name: zipkin
+  #   ports:
+  #     - 9411:9411
+
+  # otel-collector:
+  #   image: otel/opentelemetry-collector-contrib:latest
+  #   command: ["--config=/etc/otel-collector-config.yml"]
+  #   volumes:
+  #     - ./opentelemetry/otel-collector-config.yml:/etc/otel-collector-config.yml
+  #   ports:
+  #     - "13133:13133" # health_check extension
+  #     - "9411" # Zipkin receiver
+  #     - "4317:4317" # OTLP receiver
 
 networks:
   homelab:

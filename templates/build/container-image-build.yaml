@@ -4,7 +4,7 @@ parameters:
   default: true
 - name: stageName
   type: string
-  default: ContainerImageBuild
+  default: Build
 - name: stageDependencies 
   type: object 
   default: 
@@ -15,6 +15,21 @@ parameters:
 - name: containerImageTag
   type: string
   default: $(Build.BuildNumber)
+- name: helmRemoteChartRepositoryURL
+  type: string
+  default: "https://freddieentity.github.io/universal-helm-charts"
+- name: helmRemoteChartRepositoryName
+  type: string
+  default: "universal-helm-charts"
+- name: helmChartPath
+  type: string
+  default: "./deploy/helm"
+- name: helmChartName
+  type: string
+  default: ""
+- name: helmChartVersion
+  type: string
+  default: ""
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -67,13 +82,39 @@ stages:
               --name ${{ parameters.containerRegistryName }} \
               --image ${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} \
               --write-enabled false
+
+    - job: HelmPackageAndPublish
+      displayName: Helm Package And Publish
+      steps: 
+      - task: AzureCLI@2
+        displayName: Login to Azure Container Registry
+        inputs:
+          azureSubscription: $(CONTAINER_REGISTRY_CREDENTIALS)
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            az acr login --name ${{ parameters.containerRegistryName }}
       
+      - bash: |
+          helm repo add ${{ paramters.helmRemoteChartRepositoryName }} ${{ paramters.helmRemoteChartRepositoryURL }}
+          helm dependency update ${{ paramters.helmChartPath }}
+          helm search repo ${{ paramters.helmRemoteChartRepositoryName }}
+          yq -i '.microservices-standard.image.repository = "${{ parameters.containerRegistryName }}"' ${{ paramters.helmChartPath }}/values.yaml  
+          yq -i '.microservices-standard.image.tag = "${{ parameters.containerImageTag }}"' ${{ paramters.helmChartPath }}/values.yaml  
+          yq -i '.microservices-standard.fullNameOverride = "${{ paramters.containerImageName }}"' ${{ paramters.helmChartPath }}/values.yaml  
+          helm package ${{ paramters.helmChartPath }} --version 1.0.0 --app-version 1.0.0 --destination ${{ paramters.helmChartPath }}/packages
+          helm upgrade --install ${{ paramters.containerImageName }} --dry-run --debug ${{ paramters.helmChartPath }}
+          helm push ${{ paramters.helmChartPath }}/${{ paramters.helmRemoteChartRepositoryName }}-1.0.0.tgz oci://${{ parameters.containerRegistryName }}.azurecr.io/helm 
+        displayName: Helm Package
+
+      - bash: |
+          helm upgrade --install ${{ paramters.containerImageName }} ${{ paramters.helmChartPath }}
+        displayName: Helm Deploy
       # - task: HelmDeploy@0
       #   inputs:
       #       command: package
-      #       # chartPath: $(repositoryExact)/charts/$(repository)
-      #       chartPath: $(repositoryExact)/charts/$(repository)
-      #       chartVersion: $(Build.BuildId)
+      #       chartPath: ${{ parameters.helmChartPath }} #/helm
+      #       chartVersion: ${{ parameters.helmChartVersion }}
       #       destination: $(Build.ArtifactStagingDirectory)
 
       # - task: AzureCLI@1
@@ -81,5 +122,4 @@ stages:
       #       azureSubscription: $(SC_ARM)
       #       scriptLocation: inlineScript
       #       inlineScript: |
-      #         az acr helm push -n $(acrName) $(Build.ArtifactStagingDirectory)/$(repository)-$(Build.BuildId).tgz
-      #         az acr helm push $(System.ArtifactsDirectory)/${{ parameters.containerRegistryName }}/helm/-$(Build.SourceBranchName).tgz --name ${{ parameters.containerRegistryName }}
+      #         az acr helm push -n ${{ parameters.containerRegistryName }} $(Build.ArtifactStagingDirectory)/${{ parameters.containerRegistryName }}-${{ parameters.containerImageName }}-$(Build.BuildId).tgz

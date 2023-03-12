@@ -15,13 +15,16 @@ services:
     networks:
       - loki
 
-  promtail:
-    image: grafana/promtail:2.4.0
+  fluent-bit:
+    image: grafana/fluent-bit-plugin-loki:latest
+    container_name: fluent-bit
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
     volumes:
-      - /var/log:/var/log
-      - ./promtail:/etc/promtail
-    restart: unless-stopped
-    command: -config.file=/etc/promtail/promtail-config.yml
+      - ./fluent-bit/:/fluent-bit/etc/
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
     networks:
       - loki
 
@@ -31,7 +34,16 @@ services:
     volumes:
     - ./grafana:/var/lib/grafana
     ports:
-      - "4090:3000" #you might need to change this
+      - "3000:3000" #you might need to change this
     restart: unless-stopped
     networks:
       - loki
+  app:
+    image: kodekloud/event-simulator
+    container_name: event-simulator
+    ports:
+      - "4000:3000"
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
