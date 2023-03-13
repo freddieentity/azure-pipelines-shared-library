@@ -16,6 +16,7 @@ parameters:
   default: 'Homelabpool'
 - name: microserviceName
   type: string
+  default: testservice
 
 stages:
   - stage: ${{ parameters.stageName }}
