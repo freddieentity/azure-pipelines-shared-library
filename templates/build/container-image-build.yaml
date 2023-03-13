@@ -85,6 +85,8 @@ stages:
 
     - job: HelmPackageAndPublish
       displayName: Helm Package And Publish
+      pool:
+        name: Homelabpool
       steps: 
       - task: AzureCLI@2
         displayName: Login to Azure Container Registry
@@ -96,31 +98,18 @@ stages:
             az acr login --name ${{ parameters.containerRegistryName }}
       
       - bash: |
-          helm repo add ${{ paramters.helmRemoteChartRepositoryName }} ${{ paramters.helmRemoteChartRepositoryURL }}
-          helm dependency update ${{ paramters.helmChartPath }}
-          helm search repo ${{ paramters.helmRemoteChartRepositoryName }}
+          helm repo add ${{ parameters.helmRemoteChartRepositoryName }} ${{ parameters.helmRemoteChartRepositoryURL }}
+          helm dependency update ${{ parameters.helmChartPath }}
+          helm search repo ${{ parameters.helmRemoteChartRepositoryName }}
 
-          yq -i '.microservices-standard.image.repository = "${{ parameters.containerRegistryName }}"' ${{ paramters.helmChartPath }}/values.yaml  
-          yq -i '.microservices-standard.image.tag = "${{ parameters.containerImageTag }}"' ${{ paramters.helmChartPath }}/values.yaml  
-          yq -i '.microservices-standard.fullnameOverride = "${{ paramters.containerImageName }}"' ${{ paramters.helmChartPath }}/values.yaml  
-          helm package ${{ paramters.helmChartPath }} --version ${{ paramters.containerImageTag }} --app-version ${{ paramters.containerImageTag }} --destination ${{ paramters.helmChartPath }}
-          helm upgrade --install ${{ paramters.containerImageName }} --dry-run --debug ${{ paramters.helmChartPath }}
-          helm push ${{ paramters.helmChartPath }}/${{ paramters.containerImageName }}-${{ paramters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
-
-          # helm repo add universal-helm-charts https://freddieentity.github.io/universal-helm-charts
-          # helm dependency update ./deploy/helm
-          # helm search repo universal-helm-charts
-
-          # yq -i '.microservices-standard.image.repository = "freddieentity.azurecr.io"' ./deploy/helm/values.yaml  
-          # yq -i '.microservices-standard.image.tag = "1.0.0"' ./deploy/helm/values.yaml  
-          # yq -i '.microservices-standard.fullnameOverride = "testservice"' ./deploy/helm/values.yaml  
-          # yq -i '.name = "testservice"' ./deploy/helm/Chart.yaml # Override chart name for specific microservices 
-
-          # helm package ./deploy/helm --version 1.0.0 --app-version 1.0.0 --destination ./deploy/helm
-          # helm upgrade --install testservice --dry-run --debug ./deploy/helm/testservice-1.0.0.tgz  
-          # helm push ./deploy/helm/testservice-1.0.0.tgz oci://freddieentity.azurecr.io/helm 
+          yq -i '.microservices-standard.image.repository = "${{ parameters.containerRegistryName }}"' ${{ parameters.helmChartPath }}/values.yaml  
+          yq -i '.microservices-standard.image.tag = "${{ parameters.containerImageTag }}"' ${{ parameters.helmChartPath }}/values.yaml  
+          yq -i '.microservices-standard.fullnameOverride = "${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/values.yaml  
+          helm package ${{ parameters.helmChartPath }} --version ${{ parameters.containerImageTag }} --app-version ${{ parameters.containerImageTag }} --destination ${{ parameters.helmChartPath }}
+          helm upgrade --install ${{ parameters.containerImageName }} --dry-run --debug ${{ parameters.helmChartPath }}
+          helm push ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
         displayName: Helm Package Chart 
 
       - bash: |
-          helm upgrade --install ${{ paramters.containerImageName }} oci://${{ paramters.containerRegistryName }}/helm/${{ paramters.containerImageName }}-${{ paramters.containerImageTag }}.tgz
+          helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
         displayName: Helm Deploy
