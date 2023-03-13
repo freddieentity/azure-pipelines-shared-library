@@ -96,30 +96,30 @@ stages:
             az acr login --name ${{ parameters.containerRegistryName }}
       
       - bash: |
-          helm repo add ${{ paramters.helmRemoteChartRepositoryName }} ${{ paramters.helmRemoteChartRepositoryURL }}
-          helm dependency update ${{ paramters.helmChartPath }}
-          helm search repo ${{ paramters.helmRemoteChartRepositoryName }}
-          yq -i '.microservices-standard.image.repository = "${{ parameters.containerRegistryName }}"' ${{ paramters.helmChartPath }}/values.yaml  
-          yq -i '.microservices-standard.image.tag = "${{ parameters.containerImageTag }}"' ${{ paramters.helmChartPath }}/values.yaml  
-          yq -i '.microservices-standard.fullNameOverride = "${{ paramters.containerImageName }}"' ${{ paramters.helmChartPath }}/values.yaml  
-          helm package ${{ paramters.helmChartPath }} --version 1.0.0 --app-version 1.0.0 --destination ${{ paramters.helmChartPath }}/packages
-          helm upgrade --install ${{ paramters.containerImageName }} --dry-run --debug ${{ paramters.helmChartPath }}
-          helm push ${{ paramters.helmChartPath }}/${{ paramters.helmRemoteChartRepositoryName }}-1.0.0.tgz oci://${{ parameters.containerRegistryName }}.azurecr.io/helm 
-        displayName: Helm Package
+          # helm repo add ${{ paramters.helmRemoteChartRepositoryName }} ${{ paramters.helmRemoteChartRepositoryURL }}
+          # helm dependency update ${{ paramters.helmChartPath }}
+          # helm search repo ${{ paramters.helmRemoteChartRepositoryName }}
+          # yq -i '.microservices-standard.image.repository = "${{ parameters.containerRegistryName }}"' ${{ paramters.helmChartPath }}/values.yaml  
+          # yq -i '.microservices-standard.image.tag = "${{ parameters.containerImageTag }}"' ${{ paramters.helmChartPath }}/values.yaml  
+          # yq -i '.microservices-standard.fullnameOverride = "${{ paramters.containerImageName }}"' ${{ paramters.helmChartPath }}/values.yaml  
+          # helm package ${{ paramters.helmChartPath }} --version 1.0.0 --app-version 1.0.0 --destination ${{ paramters.helmChartPath }}/packages
+          # helm upgrade --install ${{ paramters.containerImageName }} --dry-run --debug ${{ paramters.helmChartPath }}
+          # helm push ${{ paramters.helmChartPath }}/${{ paramters.helmRemoteChartRepositoryName }}-1.0.0.tgz oci://${{ parameters.containerRegistryName }}.azurecr.io/helm 
+
+          helm repo add universal-helm-charts https://freddieentity.github.io/universal-helm-charts
+          helm dependency update ./deploy/helm
+          helm search repo universal-helm-charts
+
+          # yq -i '.microservices-standard.image.repository = "https://freddieentity.azurecr.io"' ./deploy/helm/values.yaml  
+          yq -i '.microservices-standard.image.tag = "1.0.0"' ./deploy/helm/values.yaml  
+          yq -i '.microservices-standard.fullnameOverride = "testservice"' ./deploy/helm/values.yaml  
+          yq -i '.name = "testservice"' ./deploy/helm/Chart.yaml # Override chart name for specific microservices 
+
+          helm package ./deploy/helm --version 1.0.0 --app-version 1.0.0 --destination ./deploy/helm
+          helm upgrade --install testservice --dry-run --debug ./deploy/helm/testservice-1.0.0.tgz  
+          helm push ./deploy/helm/testservice-1.0.0.tgz oci://freddieentity.azurecr.io/helm 
+        displayName: Helm Package Chart 
 
       - bash: |
-          helm upgrade --install ${{ paramters.containerImageName }} ${{ paramters.helmChartPath }}
+          helm upgrade --install ${{ paramters.containerImageName }} oci://${{ paramters.helmChartPath }}/helm/${{ paramters.containerImageName }}-${{ paramters.containerImageTag }}.tgz
         displayName: Helm Deploy
-      # - task: HelmDeploy@0
-      #   inputs:
-      #       command: package
-      #       chartPath: ${{ parameters.helmChartPath }} #/helm
-      #       chartVersion: ${{ parameters.helmChartVersion }}
-      #       destination: $(Build.ArtifactStagingDirectory)
-
-      # - task: AzureCLI@1
-      #   inputs:
-      #       azureSubscription: $(SC_ARM)
-      #       scriptLocation: inlineScript
-      #       inlineScript: |
-      #         az acr helm push -n ${{ parameters.containerRegistryName }} $(Build.ArtifactStagingDirectory)/${{ parameters.containerRegistryName }}-${{ parameters.containerImageName }}-$(Build.BuildId).tgz
