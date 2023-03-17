@@ -46,6 +46,11 @@ stages:
       containerRegistryName: ${{ parameters.containerRegistryName }}
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
+      helmRemoteChartRepositoryURL: https://freddieentity.github.io/universal-helm-charts
+      helmRemoteChartRepositoryName: universal-helm-charts
+      helmChartPath: $(System.DefaultWorkingDirectory)/deploy/helm
+      helmChartName: 
+      helmChartVersion: 
 
   # Container Image Scan
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml

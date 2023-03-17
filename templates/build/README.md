@@ -8,7 +8,7 @@ yq -i '.microservices-standard.image.tag = "1.0.0"' ./deploy/helm/values.yaml
 yq -i '.microservices-standard.fullnameOverride = "weatherservice"' ./deploy/helm/values.yaml  
 yq -i '.name = "weatherservice"' ./deploy/helm/Chart.yaml # Override chart name for specific microservices 
 
-helm package ./deploy/helm --version 1.0.0 --app-version 1.0.0 --destination ./deploy/helm
-helm upgrade --install weatherservice --dry-run --debug ./deploy/helm/weatherservice-1.0.0.tgz  
+helm package ./deploy/helm --version main-20230317.4 --app-version main-20230317.4 --destination ./deploy/helm
+helm upgrade --install weatherservice --dry-run --debug ./deploy/helm/weatherservice-main-20230317.4.tgz  
 helm push ./deploy/helm/weatherservice-1.0.0.tgz oci://freddieentity.azurecr.io/helm 
 ```

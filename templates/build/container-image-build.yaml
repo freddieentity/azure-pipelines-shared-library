@@ -17,19 +17,14 @@ parameters:
   default: $(Build.BuildNumber)
 - name: helmRemoteChartRepositoryURL
   type: string
-  default: "https://freddieentity.github.io/universal-helm-charts"
 - name: helmRemoteChartRepositoryName
   type: string
-  default: "universal-helm-charts"
 - name: helmChartPath
   type: string
-  default: "./deploy/helm"
 - name: helmChartName
   type: string
-  default: ""
 - name: helmChartVersion
   type: string
-  default: ""
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -86,8 +81,8 @@ stages:
     - job: HelmPackageAndPublish
       displayName: Helm Package And Publish
       dependsOn: DockerContainerImageBuild
-      pool:
-        name: Homelabpool
+      # pool:
+      #   name: Homelabpool
       steps: 
       # - task: AzureCLI@2
       #   displayName: Login to Azure Container Registry
@@ -120,7 +115,7 @@ stages:
           # Check output manifests using previous created helm packaged chart
           helm upgrade --install ${{ parameters.containerImageName }} --dry-run --debug ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
           # Store the built Helm chart to remote registry for Deployment stage
-          helm push ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
+          # helm push ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
         displayName: Helm Package Chart 
             
       # - task: HelmDeploy@0
@@ -134,7 +129,11 @@ stages:
       #     #chartType: 'Name' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
       #     releaseName: ${{ parameters.containerImageName }}
       #     chartPath: oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-
+    - job: HelmDeploy
+      displayName: Helm Deploy
+      dependsOn: HelmPackageAndPublish
+      pool:
+        name: Homelabpool
       - bash: |
           kind config use-context kind-homelab
           helm upgrade --install ${{ parameters.containerImageName }} ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
