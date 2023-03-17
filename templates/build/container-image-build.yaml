@@ -85,6 +85,7 @@ stages:
 
     - job: HelmPackageAndPublish
       displayName: Helm Package And Publish
+      dependsOn: DockerContainerImageBuild
       pool:
         name: Homelabpool
       steps: 
