@@ -134,9 +134,11 @@ stages:
       dependsOn: HelmPackageAndPublish
       pool:
         name: Homelabpool
+      steps:
       - bash: |
           kind config use-context kind-homelab
           helm upgrade --install ${{ parameters.containerImageName }} ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
           helm history ${{ parameters.containerImageName }}
           # helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
+        
         displayName: Helm Deploy
