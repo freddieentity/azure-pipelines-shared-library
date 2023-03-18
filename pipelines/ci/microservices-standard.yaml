@@ -43,6 +43,7 @@ stages:
       stageDependencies:
         - SCA
         - SAST
+      azureServiceConnection: SC ARM
       containerRegistryName: ${{ parameters.containerRegistryName }}
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
@@ -64,22 +65,8 @@ stages:
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
 
-  # Preview Deployment
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
-    parameters:
-      environment: Development
-      enabled: ${{ parameters.enablePreviewDeployment }}
-      stageName: Development
-      stageDependencies:
-        - Build
-      deploymentPoolName: Homelabpool
-
 
 parameters:
-  - name: environment
-    displayName: Environment
-    type: string
-    default: Development
   # - name: unitTestSourcesDirectory
   #   displayName: Unit Test Sources Directory
   #   type: string

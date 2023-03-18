@@ -8,6 +8,8 @@ parameters:
 - name: stageDependencies 
   type: object 
   default: 
+- name: azureServiceConnection
+  type: string
 - name: containerRegistryName
   type: string
 - name: containerImageName
@@ -49,27 +51,37 @@ stages:
           docker build -t ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} .
         displayName: Docker Build
 
-      - task: Docker@2 # https://prcode.co.uk/2020/12/09/push-docker-image-to-acr-without-service-connection-in-azure-devops/
-        displayName: Registry - Login
+      - task: AzureCLI@2
+        displayName: 'Push Docker Image to ACR'
         inputs:
-          command: login
-          containerRegistry: $(CONTAINER_REGISTRY_CREDENTIALS)
+          azureSubscription: ${{ parameters.azureServiceConnection }}
+          scriptType: 'ps'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az acr login --name ${{ parameters.containerRegistryName }}
+            docker push ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}
 
-      - bash: |
-          docker push ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}
-        displayName: Push container image
+      # - task: Docker@2 # https://prcode.co.uk/2020/12/09/push-docker-image-to-acr-without-service-connection-in-azure-devops/
+      #   displayName: Registry - Login
+      #   inputs:
+      #     command: login
+      #     containerRegistry: $(CONTAINER_REGISTRY_CREDENTIALS)
 
-      - task: Docker@2
-        displayName: Registry - Logout
-        inputs:
-          command: logout
-          containerRegistry: $(CONTAINER_REGISTRY_CREDENTIALS)
+      # - bash: |
+      #     docker push ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}
+      #   displayName: Push container image
+
+      # - task: Docker@2
+      #   displayName: Registry - Logout
+      #   inputs:
+      #     command: logout
+      #     containerRegistry: $(CONTAINER_REGISTRY_CREDENTIALS)
 
       - task: AzureCLI@2
         displayName: 'Lock release candidate image'
         condition: eq(variables.IS_TAG, 'True')
         inputs:
-          azureSubscription: $(SC_ARM)
+          azureSubscription: ${{ parameters.azureServiceConnection }}
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
@@ -115,30 +127,31 @@ stages:
           # Check output manifests using previous created helm packaged chart
           helm upgrade --install ${{ parameters.containerImageName }} --dry-run --debug ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
           # Store the built Helm chart to remote registry for Deployment stage
-          # helm push ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
+          helm push ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
         displayName: Helm Package Chart 
             
-      # - task: HelmDeploy@0
-      #   inputs:
-      #     connectionType: 'Azure Resource Manager' # 'Azure Resource Manager' | 'Kubernetes Service Connection' | 'None'. Required. Connection Type. Default: Azure Resource Manager.
-      #     azureSubscription: $(SC_ARM)
-      #     azureResourceGroup: 'rg-homelab-online-boutique'
-      #     kubernetesCluster: 'aks-homelab-online-boutique'
-      #     namespace: 'default'
-      #     command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
-      #     #chartType: 'Name' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
-      #     releaseName: ${{ parameters.containerImageName }}
-      #     chartPath: oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-    - job: HelmDeploy
-      displayName: Helm Deploy
-      dependsOn: HelmPackageAndPublish
-      pool:
-        name: Homelabpool
-      steps:
-      - bash: |
-          kind config use-context kind-homelab
-          helm upgrade --install ${{ parameters.containerImageName }} ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-          helm history ${{ parameters.containerImageName }}
-          # helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-        
-        displayName: Helm Deploy
+      
+    # - job: HelmDeploy
+    #   displayName: Helm Deploy
+    #   dependsOn: HelmPackageAndPublish
+    #   pool:
+    #     name: Homelabpool
+    #   steps:
+    #   - bash: |
+    #       kubectl config use-context kind-homelab
+    #       helm upgrade --install ${{ parameters.containerImageName }} ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
+    #       helm history ${{ parameters.containerImageName }}
+    #       # helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
+    #     displayName: Helm Deploy
+
+        - task: HelmDeploy@0
+          inputs:
+            connectionType: 'Azure Resource Manager' # 'Azure Resource Manager' | 'Kubernetes Service Connection' | 'None'. Required. Connection Type. Default: Azure Resource Manager.
+            azureSubscription: ${{ parameters.azureServiceConnection }}
+            azureResourceGroup: 'rg-homelab-online-boutique'
+            kubernetesCluster: 'aks-homelab-online-boutique'
+            namespace: 'default'
+            command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
+            #chartType: 'Name' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
+            releaseName: ${{ parameters.containerImageName }}
+            chartPath: oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
