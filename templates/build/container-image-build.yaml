@@ -55,7 +55,7 @@ stages:
         displayName: 'Push Docker Image to ACR'
         inputs:
           azureSubscription: ${{ parameters.azureServiceConnection }}
-          scriptType: 'ps'
+          scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
             az acr login --name ${{ parameters.containerRegistryName }}
