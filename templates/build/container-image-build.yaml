@@ -139,7 +139,6 @@ stages:
           namespace: 'default'
           command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
           chartType: 'FilePath' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
-          chartName: 
           releaseName: ${{ parameters.containerImageName }}
           chartPath: oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
 
