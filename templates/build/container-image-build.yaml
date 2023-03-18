@@ -129,8 +129,20 @@ stages:
           # Store the built Helm chart to remote registry for Deployment stage
           helm push ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
         displayName: Helm Package Chart 
-            
-      
+
+      - task: HelmDeploy@0
+        inputs:
+          connectionType: 'Azure Resource Manager' # 'Azure Resource Manager' | 'Kubernetes Service Connection' | 'None'. Required. Connection Type. Default: Azure Resource Manager.
+          azureSubscription: ${{ parameters.azureServiceConnection }}
+          azureResourceGroup: 'rg-homelab-online-boutique'
+          kubernetesCluster: 'aks-homelab-online-boutique'
+          namespace: 'default'
+          command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
+          chartType: 'FilePath' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
+          chartName: 
+          releaseName: ${{ parameters.containerImageName }}
+          chartPath: oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
+
     # - job: HelmDeploy
     #   displayName: Helm Deploy
     #   dependsOn: HelmPackageAndPublish
@@ -143,15 +155,3 @@ stages:
     #       helm history ${{ parameters.containerImageName }}
     #       # helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
     #     displayName: Helm Deploy
-
-      - task: HelmDeploy@0
-        inputs:
-          connectionType: 'Azure Resource Manager' # 'Azure Resource Manager' | 'Kubernetes Service Connection' | 'None'. Required. Connection Type. Default: Azure Resource Manager.
-          azureSubscription: ${{ parameters.azureServiceConnection }}
-          azureResourceGroup: 'rg-homelab-online-boutique'
-          kubernetesCluster: 'aks-homelab-online-boutique'
-          namespace: 'default'
-          command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
-          #chartType: 'Name' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
-          releaseName: ${{ parameters.containerImageName }}
-          chartPath: oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
