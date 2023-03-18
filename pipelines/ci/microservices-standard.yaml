@@ -77,10 +77,8 @@ parameters:
   #   default: ''
   - name: containerRegistryName
     type: string
-    default: freddieentity.azurecr.io
   - name: containerImageName
     type: string
-    default: weatherservice
   - name: containerImageTag
     type: string
     default: $(Build.BuildNumber)
