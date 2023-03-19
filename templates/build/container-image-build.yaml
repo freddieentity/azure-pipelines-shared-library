@@ -129,9 +129,7 @@ stages:
           scriptLocation: 'inlineScript'
           inlineScript: |
             az aks get-credentials --resource-group rg-homelab-online-boutique --name aks-homelab-online-boutique
-            helm upgrade --install ${{ parameters.containerImageName }} \ 
-              oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }} \ 
-              --version ${{ parameters.containerImageTag }}
+            helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }} --version ${{ parameters.containerImageTag }}
 
       # - task: HelmDeploy@0
       #   inputs:
