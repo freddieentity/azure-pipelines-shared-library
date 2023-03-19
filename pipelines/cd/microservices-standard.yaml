@@ -6,8 +6,9 @@
 trigger: none
 resources:
   pipelines:
-   - pipeline: onlineboutique-weatherservice
-     source: onlineboutique-weatherservice
+  - ${{ each pipeline in $(MICROSERVICE_LIST) }}:
+    - pipeline: ${{ pipeline }} # onlineboutique-weatherservice
+     source: ${{ pipeline }} # onlineboutique-weatherservice
      trigger:
       branches:
        include:
@@ -15,7 +16,7 @@ resources:
         - refs/heads/develop
         - refs/heads/release/*
 
-variables:
+variables: # https://tsuyoshiushio.medium.com/how-to-pass-variables-with-pipeline-trigger-in-azure-pipeline-5771c5f18f91
   - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml
 
 stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/deployment-strategies.md

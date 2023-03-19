@@ -6,6 +6,9 @@ variables:
   CONTAINER_REGISTRY_CREDENTIALS: # homelabregistrycredentials
   APPLICATION_DOMAIN: 127.0.0.1.nip.io
 
+  # MICROSERVICES
+  MICROSERVICE_LIST: [weatherservice, adservice]
+
   # Weather Service
   WEATHER_SERVICE_ADDR: weatherservice
   WEATHER_SERVICE_PORT: 8080
