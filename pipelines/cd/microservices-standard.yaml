@@ -25,6 +25,7 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
       environment: Development
       stageName: Development
       deploymentPoolName: Homelabpool
+      azureServiceConnection: SC ARM
       containerRegistryName: $(CONTAINER_REGISTRY_NAME)
       containerImageName: $(Build.Repository.Name) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
       containerImageTag: $(Build.Repository.ID)
