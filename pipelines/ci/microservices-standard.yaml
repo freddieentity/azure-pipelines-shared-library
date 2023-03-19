@@ -53,17 +53,17 @@ stages:
       helmChartName: 
       helmChartVersion: 
 
-  # Container Image Scan
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
-    parameters:
-      enabled: ${{ parameters.enableContainerImageScan }}
-      stageName: ContainerImageScan
-      stageDependencies:
-        - Build
-      trivyTemplatePath: /templates/security/container/trivy.tpl
-      containerRegistryName: ${{ parameters.containerRegistryName }}
-      containerImageName: ${{ parameters.containerImageName }}
-      containerImageTag: ${{ parameters.containerImageTag }}
+  # # Container Image Scan
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/container/trivy.yaml
+  #   parameters:
+  #     enabled: ${{ parameters.enableContainerImageScan }}
+  #     stageName: ContainerImageScan
+  #     stageDependencies:
+  #       - Build
+  #     trivyTemplatePath: /templates/security/container/trivy.tpl
+  #     containerRegistryName: ${{ parameters.containerRegistryName }}
+  #     containerImageName: ${{ parameters.containerImageName }}
+  #     containerImageTag: ${{ parameters.containerImageTag }}
 
 
 parameters:
