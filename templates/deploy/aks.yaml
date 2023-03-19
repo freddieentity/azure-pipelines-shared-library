@@ -41,9 +41,9 @@ stages:
           deploy:
             steps:
             - script: | 
-                'env | sort'
+                printenv | sort
                 echo $(Resources.TriggeringAlias)
-                echo $(resources.pipeline.${{ variables.Resources.TriggeringAlias }}.pipelineName)
+                echo $(resources.pipeline.$(Resources.TriggeringAlias).pipelineName)
               displayName: "echo Environment Variables"
             - task: DownloadBuildArtifacts@0
               displayName: 'Download variables'
