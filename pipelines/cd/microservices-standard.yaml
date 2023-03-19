@@ -5,16 +5,13 @@
 # Release
 trigger: none
 resources:
-  pipelines:
-  - ${{ each pipeline in $(MICROSERVICE_LIST) }}:
-    - pipeline: ${{ pipeline }} # onlineboutique-weatherservice
-     source: ${{ pipeline }} # onlineboutique-weatherservice
-     trigger:
+  # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops&tabs=schema#resources-containers
+  pipelines: # https://bartwullems.blogspot.com/2021/06/azure-pipelines-template-expression-is.html
+  - pipeline: onlineboutique-weatherservice # Can't use template expression for resources section except for containers
+    source: onlineboutique-weatherservice
+    trigger:
       branches:
-       include:
-        - refs/heads/main
-        - refs/heads/develop
-        - refs/heads/release/*
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
 
 variables: # https://tsuyoshiushio.medium.com/how-to-pass-variables-with-pipeline-trigger-in-azure-pipeline-5771c5f18f91
   - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml

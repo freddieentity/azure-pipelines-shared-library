@@ -40,6 +40,29 @@ stages:
         runOnce:
           deploy:
             steps:
+            - script: | 
+                'env | sort'
+                echo $(Resources.TriggeringAlias)
+                echo $(resources.pipeline.${{ variables.Resources.TriggeringAlias }}.pipelineName)
+              displayName: "echo Environment Variables"
+            - task: DownloadBuildArtifacts@0
+              displayName: 'Download variables'
+              inputs:
+                buildType: 'specific'
+                # project: '<YOUR_PROJECT_ID_HERE>'
+                # pipeline: '229'
+                specificBuildWithTriggering: true
+                buildVersionToDownload: 'latest'
+                downloadType: 'specific'
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - script: cat $(System.ArtifactsDirectory)/variables/pipeline.env
+              displayName: 'Restore Enviornment Variables'
+            - script: | 
+                echo "CONTAINER_IMAGE_NAME:$(CONTAINER_IMAGE_NAME)"
+                echo "CONTAINER_IMAGE_TAG:$(CONTAINER_IMAGE_TAG)"
+              displayName: 'echo ENV variables'
+
             - task: AzureCLI@2
               displayName: 'Deploy Helm Chart Artifact'
               inputs:
