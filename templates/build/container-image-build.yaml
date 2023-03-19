@@ -131,6 +131,15 @@ stages:
             az aks get-credentials --resource-group rg-homelab-online-boutique --name aks-homelab-online-boutique
             helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }} --version ${{ parameters.containerImageTag }}
 
+      - task: AzureCLI@2
+        displayName: 'Rollback Previous Release'
+        inputs:
+          azureSubscription: ${{ parameters.azureServiceConnection }}
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az aks get-credentials --resource-group rg-homelab-online-boutique --name aks-homelab-online-boutique     
+            helm rollback ${{ parameters.containerImageName }} 0 # Previous release
       # - task: HelmDeploy@0
       #   inputs:
       #     connectionType: 'Azure Resource Manager' # 'Azure Resource Manager' | 'Kubernetes Service Connection' | 'None'. Required. Connection Type. Default: Azure Resource Manager.
