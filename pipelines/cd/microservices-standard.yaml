@@ -8,7 +8,6 @@ resources:
   pipelines:
    - pipeline: onlineboutique-weatherservice
      source: onlineboutique-weatherservice
-     selectable: true
      trigger:
       branches:
        include:
