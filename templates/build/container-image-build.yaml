@@ -126,7 +126,7 @@ stages:
           echo "##vso[task.setvariable variable=CONTAINER_IMAGE_TAG;]${{ parameters.containerImageTag }}" >>  $(Build.ArtifactStagingDirectory)/pipeline.env
         displayName: Prepare Variables For CD Pipeline
       
-      - task: PublishBuildArtifacts@2
+      - task: PublishBuildArtifacts@1
         displayName: Publish Prepared Variables
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
