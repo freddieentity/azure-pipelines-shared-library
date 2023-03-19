@@ -49,7 +49,7 @@ stages:
                 inlineScript: |
                   az aks get-credentials --resource-group rg-homelab-online-boutique --name aks-homelab-online-boutique
                   helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }} --version ${{ parameters.containerImageTag }}
-                  helm history ${{ parameters.containerImageName } 
+                  helm history ${{ parameters.containerImageName }}
 
             - task: AzureCLI@2
               displayName: 'Rollback Previous Helm Release'
@@ -61,7 +61,7 @@ stages:
                 inlineScript: |
                   az aks get-credentials --resource-group rg-homelab-online-boutique --name aks-homelab-online-boutique   
                   helm rollback ${{ parameters.containerImageName }} 0 # Previous release
-                  helm history ${{ parameters.containerImageName }  
+                  helm history ${{ parameters.containerImageName }}
 
             # - checkout: git://HomeLab/onlineboutique-helm-charts
 
