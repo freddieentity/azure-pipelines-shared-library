@@ -23,10 +23,10 @@ parameters:
 - name: containerImageTag
   type: string
   default: $(Build.BuildNumber)
-- name: projectTriggerID
-  type: string
-- name: pipelineTriggerID
-  type: string
+# - name: projectTriggerID
+#   type: string
+# - name: pipelineTriggerID
+#   type: string
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -44,25 +44,25 @@ stages:
         runOnce:
           deploy:
             steps:
-            - script: | 
-                printenv | sort
-              displayName: "echo Environment Variables"
-            - task: DownloadBuildArtifacts@0
-              displayName: 'Download variables'
-              inputs:
-                buildType: 'specific'
-                project: ${{ parameters.projectTriggerID }}
-                pipeline: ${{ parameters.pipelineTriggerID }}
-                buildVersionToDownload: 'latest'
-                downloadType: 'specific'
-                downloadPath: '$(System.ArtifactsDirectory)'
+            # - script: | 
+            #     printenv | sort
+            #   displayName: "echo Environment Variables"
+            # - task: DownloadBuildArtifacts@0
+            #   displayName: 'Download variables'
+            #   inputs:
+            #     buildType: 'specific'
+            #     project: ${{ parameters.projectTriggerID }}
+            #     pipeline: ${{ parameters.pipelineTriggerID }}
+            #     buildVersionToDownload: 'latest'
+            #     downloadType: 'specific'
+            #     downloadPath: '$(System.ArtifactsDirectory)'
 
-            - script: cat $(System.ArtifactsDirectory)/variables/pipeline.env
-              displayName: 'Restore Enviornment Variables'
-            - script: | 
-                echo "CONTAINER_IMAGE_NAME:$(CONTAINER_IMAGE_NAME)"
-                echo "CONTAINER_IMAGE_TAG:$(CONTAINER_IMAGE_TAG)"
-              displayName: 'echo ENV variables'
+            # - script: cat $(System.ArtifactsDirectory)/variables/pipeline.env
+            #   displayName: 'Restore Enviornment Variables'
+            # - script: | 
+            #     echo "CONTAINER_IMAGE_NAME:$(CONTAINER_IMAGE_NAME)"
+            #     echo "CONTAINER_IMAGE_TAG:$(CONTAINER_IMAGE_TAG)"
+            #   displayName: 'echo ENV variables'
 
             - task: AzureCLI@2
               displayName: 'Deploy Helm Chart Artifact'
@@ -96,48 +96,6 @@ stages:
  
             #   displayName: Helm Install
             
-            # - task: HelmDeploy@0
-            #   inputs:
-            #     connectionType: 'Azure Resource Manager' # 'Azure Resource Manager' | 'Kubernetes Service Connection' | 'None'. Required. Connection Type. Default: Azure Resource Manager.
-            #     azureSubscription: $(SC_ARM)
-            #     azureResourceGroup: 'rg-homelab-online-boutique'
-            #     kubernetesCluster: 'aks-homelab-online-boutique'
-            #     namespace: 'default'
-            #     command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
-            #     #chartType: 'Name' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
-            #     releaseName: ${{ parameters.microserviceName }}
-            #     chartPath: $(Agent.BuildDirectory)/s/${{ parameters.microserviceName }}
-            
-            # - bash: |
-            #     helm history ${{ parameters.microserviceName }}
-            #     helm rollback ${{ parameters.microserviceName }} 0
-            #     helm history ${{ parameters.microserviceName }}
-
-            #   displayName: Helm Rollback
-            #   condition: failed()
-
-    # - job: ManualApproval
-    #   displayName: "ManualApproval"
-    #   pool: server
-    #   steps:
-    #   - task: ManualValidation@0
-    #     timeoutInMinutes: 1440 # task times out in 1 day
-    #     inputs:
-    #       notifyUsers: |
-    #         [freddieentity]\HomeLab Admin
-    #       instructions: 'Please validate the deployment and resume'
-    #       onTimeout: 'reject'
-
-    # - job: Rollback
-    #   displayName: Rollback
-    #   environment: ${{ parameters.environment }}
-    #   steps:
-    #     - bash: |
-    #         helm history ${{ parameters.microserviceName }}
-    #         helm rollback ${{ parameters.microserviceName }} 0
-    #         helm history ${{ parameters.microserviceName }}
-          
-    #       displayName: Helm Rollback
               
             
                 

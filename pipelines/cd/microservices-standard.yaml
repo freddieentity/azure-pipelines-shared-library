@@ -27,8 +27,8 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
       containerRegistryName: $(CONTAINER_REGISTRY_NAME)
       containerImageName: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineName) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
       containerImageTag: $(resources.pipeline.$(Resources.TriggeringAlias).runName)
-      projectTriggerID: $(resources.pipeline.$(Resources.TriggeringAlias).projectID)
-      pipelineTriggerID: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineID)
+      # projectTriggerID: $(resources.pipeline.$(Resources.TriggeringAlias).projectID)
+      # pipelineTriggerID: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineID)
 
   # # Test
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
