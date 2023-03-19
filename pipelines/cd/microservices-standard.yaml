@@ -11,9 +11,9 @@ resources:
      trigger:
       branches:
        include:
-         - ref/heads/main
-         - ref/heads/develop
-         - ref/heads/release/*
+        - refs/heads/main
+        - refs/heads/develop
+        - refs/heads/release/*
 
 variables:
   - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml
