@@ -23,6 +23,10 @@ parameters:
 - name: containerImageTag
   type: string
   default: $(Build.BuildNumber)
+- name: projectTriggerID
+  type: string
+- name: pipelineTriggerID
+  type: string
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -47,8 +51,8 @@ stages:
               displayName: 'Download variables'
               inputs:
                 buildType: 'specific'
-                project: $(resources.pipeline.$(Resources.TriggeringAlias).projectID)
-                pipeline: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineID)
+                project: ${{ parameters.projectTriggerID }}
+                pipeline: ${{ parameters.pipelineTriggerID }}
                 buildVersionToDownload: 'latest'
                 downloadType: 'specific'
                 downloadPath: '$(System.ArtifactsDirectory)'
