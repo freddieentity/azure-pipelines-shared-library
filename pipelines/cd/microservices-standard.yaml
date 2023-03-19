@@ -25,8 +25,8 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
       deploymentPoolName: Homelabpool
       azureServiceConnection: SC ARM
       containerRegistryName: $(CONTAINER_REGISTRY_NAME)
-      containerImageName: $(Build.TriggeredBy.DefinitionName) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
-      containerImageTag: $(Build.TriggeredBy.BuildNumber)
+      containerImageName: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineName) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
+      containerImageTag: $(resources.pipeline.$(Resources.TriggeringAlias).runName)
 
   # # Test
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
