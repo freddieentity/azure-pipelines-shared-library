@@ -95,16 +95,7 @@ stages:
       dependsOn: DockerContainerImageBuild
       # pool:
       #   name: Homelabpool
-      steps: 
-      # - task: AzureCLI@2
-      #   displayName: Login to Azure Container Registry
-      #   inputs:
-      #     azureSubscription: $(CONTAINER_REGISTRY_CREDENTIALS)
-      #     scriptType: bash
-      #     scriptLocation: inlineScript
-      #     inlineScript: |
-      #       az acr login --name ${{ parameters.containerRegistryName }}
-      
+      steps:  
       - bash: |
           # Use standard helm chart for any microservices. Modify the chart version to match with container image tag by pull and re-package it then push to registry
 
@@ -140,7 +131,7 @@ stages:
           command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
           chartType: 'Name' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
           releaseName: ${{ parameters.containerImageName }}
-          chartPath: oci://${{ parameters.containerRegistryName }}/helm/
+          chartPath: ${{ parameters.containerRegistryName }}/helm/
           chartName: ${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
 
     # - job: HelmDeploy
