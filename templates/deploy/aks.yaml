@@ -14,9 +14,15 @@ parameters:
 - name: deploymentPoolName
   type: string
   default: 'Homelabpool'
-- name: microserviceName
+- name: azureServiceConnection
   type: string
-  default: testservice
+- name: containerRegistryName
+  type: string
+- name: containerImageName
+  type: string
+- name: containerImageTag
+  type: string
+  default: $(Build.BuildNumber)
 
 stages:
   - stage: ${{ parameters.stageName }}
@@ -34,14 +40,37 @@ stages:
         runOnce:
           deploy:
             steps:
-            - checkout: git://HomeLab/onlineboutique-helm-charts
+            - task: AzureCLI@2
+              displayName: 'Deploy Helm Chart Artifact'
+              inputs:
+                azureSubscription: ${{ parameters.azureServiceConnection }}
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az aks get-credentials --resource-group rg-homelab-online-boutique --name aks-homelab-online-boutique
+                  helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }} --version ${{ parameters.containerImageTag }}
+                  helm history ${{ parameters.containerImageName } 
 
-            - bash: | # when checkout one repo, the repo itself will be cloned to $(Agent.BuildDirectory)/s/
-                kind config use-context kind-homelab
-                helm upgrade -i ${{ parameters.microserviceName }} $(Agent.BuildDirectory)/s/${{ parameters.microserviceName }} \
-                --set "ingress.hosts[0].host=abc.127.0.0.1.nip.io,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix"
+            - task: AzureCLI@2
+              displayName: 'Rollback Previous Helm Release'
+              condition: failed()
+              inputs:
+                azureSubscription: ${{ parameters.azureServiceConnection }}
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az aks get-credentials --resource-group rg-homelab-online-boutique --name aks-homelab-online-boutique   
+                  helm rollback ${{ parameters.containerImageName }} 0 # Previous release
+                  helm history ${{ parameters.containerImageName }  
+
+            # - checkout: git://HomeLab/onlineboutique-helm-charts
+
+            # - bash: | # when checkout one repo, the repo itself will be cloned to $(Agent.BuildDirectory)/s/
+            #     kind config use-context kind-homelab
+            #     helm upgrade -i ${{ parameters.microserviceName }} $(Agent.BuildDirectory)/s/${{ parameters.microserviceName }} \
+            #     --set "ingress.hosts[0].host=abc.127.0.0.1.nip.io,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=Prefix"
  
-              displayName: Helm Install
+            #   displayName: Helm Install
             
             # - task: HelmDeploy@0
             #   inputs:
