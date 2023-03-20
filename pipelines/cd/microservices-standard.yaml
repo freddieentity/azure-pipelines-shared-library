@@ -15,16 +15,17 @@ resources:
 
 
 # https://adamtheautomator.com/azure-devops-variables/
+# https://stackoverflow.com/questions/65598404/need-replace-alias-value-of-predefined-variables-in-azure-devops-pipelines
 variables: # https://tsuyoshiushio.medium.com/how-to-pass-variables-with-pipeline-trigger-in-azure-pipeline-5771c5f18f91
   - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml
-  - name: containerImageName
-    value: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineName)
-  - name: containerImageTag
-    value: $(resources.pipeline.$(Resources.TriggeringAlias).runName)
-  - name: projectTriggerID
-    value: $(resources.pipeline.$(Resources.TriggeringAlias).projectID)
-  - name: pipelineTriggerID
-    value: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineID)
+  # - name: containerImageName
+  #   value: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineName)
+  # - name: containerImageTag
+  #   value: $(resources.pipeline.$(Resources.TriggeringAlias).runName)
+  # - name: projectTriggerID
+  #   value: $(resources.pipeline.$(Resources.TriggeringAlias).projectID)
+  # - name: pipelineTriggerID
+  #   value: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineID)
 
 stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/deployment-strategies.md
   # Development
@@ -37,8 +38,8 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
       resourceGroup: rg-homelab-online-boutique
       azureServiceConnection: SC ARM
       containerRegistryName: $(CONTAINER_REGISTRY_NAME)
-      containerImageName: $(containerImageName) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
-      containerImageTag: $(containerImageTag)
+      # containerImageName: $(containerImageName) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
+      # containerImageTag: $(containerImageTag)
       # projectTriggerID: $(projectTriggerID)
       # pipelineTriggerID: $(pipelineTriggerID)
 
