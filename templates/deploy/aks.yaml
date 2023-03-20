@@ -57,7 +57,10 @@ stages:
             #     downloadType: 'specific'
             #     downloadPath: '$(System.ArtifactsDirectory)'
 
-            - script: cat $(Resources.TriggeringAlias)/pipeline.env
+            - script: |
+                pwd
+                ls
+                cat $(Resources.TriggeringAlias)/pipeline.env
               displayName: 'Restore Enviornment Variables'
             - script: | 
                 echo "CONTAINER_IMAGE_NAME:$(containerImageName)"
