@@ -24,8 +24,7 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
   - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/aks.yaml
       parameters:
-        environment: Development
-        stageName: Development
+        stageName: Deployment
         deploymentPoolName: Homelabpool
         azureServiceConnection: SC ARM
         containerRegistryName: $(CONTAINER_REGISTRY_NAME)
@@ -36,8 +35,7 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
   - ${{ elseif eq(variables['Build.Reason'], 'Manual') }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/aks.yaml
       parameters:
-        environment: Development
-        stageName: Development
+        stageName: Deployment
         deploymentPoolName: Homelabpool
         azureServiceConnection: SC ARM
         containerRegistryName: $(CONTAINER_REGISTRY_NAME)
@@ -51,6 +49,7 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
     parameters:
       stageName: Notification
       stageDependencies: 
+        - Deployment
 
   # # Test
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
