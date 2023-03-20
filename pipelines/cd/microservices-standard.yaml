@@ -87,12 +87,13 @@ parameters:
     displayName: Environment
     type: string
     default: Development
-  - name: containerRegistryName
+  - name: resourceGroup
     type: string
-    default: freddieentity.azurecr.io
+  - name: kubernetesCluster
+    type: string
+  - name: kubernetesNamespace
+    type: string
   - name: containerImageName
     type: string
-    default: weatherservice
   - name: containerImageTag
     type: string
-    default: $(Build.BuildNumber)

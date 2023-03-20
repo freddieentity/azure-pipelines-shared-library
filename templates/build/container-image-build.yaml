@@ -96,30 +96,35 @@ stages:
       # pool:
       #   name: Homelabpool
       steps:  
-      - bash: |
-          # Use standard helm chart for any microservices. Modify the chart version to match with container image tag by pull and re-package it then push to registry
-
-          # In the context of individual microservices. Add the Helm repo 
-          helm repo add ${{ parameters.helmRemoteChartRepositoryName }} ${{ parameters.helmRemoteChartRepositoryURL }}
-          # Update the dependencies in the Chart.yaml in individual microservices
-          helm dependency update ${{ parameters.helmChartPath }}
-          # Check whether the remote repository contains standard charts is avaiable
-          helm search repo ${{ parameters.helmRemoteChartRepositoryName }}
-
-          # Modify build time Helm values
-          yq -i '.microservices-standard.image.repository = "${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/values.yaml  
-          yq -i '.microservices-standard.image.tag = "${{ parameters.containerImageTag }}"' ${{ parameters.helmChartPath }}/values.yaml  
-          yq -i '.microservices-standard.fullnameOverride = "${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/values.yaml  
-          # Change the Chart name to make the package name corresponding to each microservices
-          yq -i '.name = "${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/Chart.yaml # Override chart name for specific microservices 
-
-          # Version by re-packaging the chart and push back to registry. The output artifact will be the chart name (microservices name) - its tag and .tgz
-          helm package ${{ parameters.helmChartPath }} --version ${{ parameters.containerImageTag }} --app-version ${{ parameters.containerImageTag }} --destination ${{ parameters.helmChartPath }}
-          # Check output manifests using previous created helm packaged chart
-          helm upgrade --install ${{ parameters.containerImageName }} --dry-run --debug ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-          # Store the built Helm chart to remote registry for Deployment stage
-          helm push ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
+      - task: AzureCLI@2
         displayName: Helm Package Chart 
+        inputs:
+          azureSubscription: ${{ parameters.azureServiceConnection }}
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            # Use standard helm chart for any microservices. Modify the chart version to match with container image tag by pull and re-package it then push to registry
+            # In the context of individual microservices. Add the Helm repo 
+            helm repo add ${{ parameters.helmRemoteChartRepositoryName }} ${{ parameters.helmRemoteChartRepositoryURL }}
+            # Update the dependencies in the Chart.yaml in individual microservices
+            helm dependency update ${{ parameters.helmChartPath }}
+            # Check whether the remote repository contains standard charts is avaiable
+            helm search repo ${{ parameters.helmRemoteChartRepositoryName }}
+
+            # Modify build time Helm values
+            yq -i '.microservices-standard.image.repository = "${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/values.yaml  
+            yq -i '.microservices-standard.image.tag = "${{ parameters.containerImageTag }}"' ${{ parameters.helmChartPath }}/values.yaml  
+            yq -i '.microservices-standard.fullnameOverride = "${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/values.yaml  
+            # Change the Chart name to make the package name corresponding to each microservices
+            yq -i '.name = "${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/Chart.yaml # Override chart name for specific microservices 
+
+            # Version by re-packaging the chart and push back to registry. The output artifact will be the chart name (microservices name) - its tag and .tgz
+            helm package ${{ parameters.helmChartPath }} --version ${{ parameters.containerImageTag }} --app-version ${{ parameters.containerImageTag }} --destination ${{ parameters.helmChartPath }}
+            # Check output manifests using previous created helm packaged chart
+            helm upgrade --install ${{ parameters.containerImageName }} --dry-run --debug ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
+            # Store the built Helm chart to remote registry for Deployment stage
+            helm push ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz oci://${{ parameters.containerRegistryName }}/helm 
+        
 
       - bash: |
           echo "##vso[task.setvariable variable=CONTAINER_IMAGE_NAME;]${{ parameters.containerImageName }}" >>  $(Build.ArtifactStagingDirectory)/pipeline.env
@@ -132,30 +137,3 @@ stages:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: 'variables'
           publishLocation: 'Container'
-
-      # - task: HelmDeploy@0
-      #   inputs:
-      #     connectionType: 'Azure Resource Manager' # 'Azure Resource Manager' | 'Kubernetes Service Connection' | 'None'. Required. Connection Type. Default: Azure Resource Manager.
-      #     azureSubscription: ${{ parameters.azureServiceConnection }}
-      #     azureResourceGroup: 'rg-homelab-online-boutique'
-      #     kubernetesCluster: 'aks-homelab-online-boutique'
-      #     namespace: 'default'
-      #     command: 'upgrade' # 'create' | 'delete' | 'expose' | 'get' | 'init' | 'install' | 'login' | 'logout' | 'ls' | 'package' | 'rollback' | 'save' | 'upgrade' | 'uninstall'. Required. Command. Default: ls.
-      #     chartType: 'Name' # 'Name' | 'FilePath'. Required when command == install || command == upgrade. Chart Type. Default: Name.
-      #     releaseName: ${{ parameters.containerImageName }}
-      #     chartPath: oci://${{ parameters.containerRegistryName }}
-      #     chartName: ${{ parameters.containerImageName }}
-      #     chartVersion: ${{ parameters.containerImageTag }}
-
-    # - job: HelmDeploy
-    #   displayName: Helm Deploy
-    #   dependsOn: HelmPackageAndPublish
-    #   pool:
-    #     name: Homelabpool
-    #   steps:
-    #   - bash: |
-    #       kubectl config use-context kind-homelab
-    #       helm upgrade --install ${{ parameters.containerImageName }} ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-    #       helm history ${{ parameters.containerImageName }}
-    #       # helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-    #     displayName: Helm Deploy
