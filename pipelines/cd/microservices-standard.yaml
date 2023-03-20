@@ -17,10 +17,14 @@ resources:
 # https://adamtheautomator.com/azure-devops-variables/
 variables: # https://tsuyoshiushio.medium.com/how-to-pass-variables-with-pipeline-trigger-in-azure-pipeline-5771c5f18f91
   - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml
-  containerImageName: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineName)
-  containerImageTag: $(resources.pipeline.$(Resources.TriggeringAlias).runName)
-  projectTriggerID: $(resources.pipeline.$(Resources.TriggeringAlias).projectID)
-  pipelineTriggerID: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineID)
+  - name: containerImageName
+    value: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineName)
+  - name: containerImageTag
+    value: $(resources.pipeline.$(Resources.TriggeringAlias).runName)
+  - name: projectTriggerID
+    value: $(resources.pipeline.$(Resources.TriggeringAlias).projectID)
+  - name: pipelineTriggerID
+    value: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineID)
 
 stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/deployment-strategies.md
   # Development
