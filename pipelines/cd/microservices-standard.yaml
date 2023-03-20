@@ -97,7 +97,7 @@ parameters:
     default: "develop"
   - name: containerImageName
     type: string
-    default: ""
+    default: "nginx"
   - name: containerImageTag
     type: string
-    default: ""
+    default: "develop"

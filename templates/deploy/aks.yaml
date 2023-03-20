@@ -26,10 +26,8 @@ parameters:
   type: string
 - name: containerImageName
   type: string
-  default: ""
 - name: containerImageTag
   type: string
-  default: ""
 
 stages:
   - stage: ${{ parameters.stageName }}
