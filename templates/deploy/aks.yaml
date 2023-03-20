@@ -22,14 +22,14 @@ parameters:
   type: string
 - name: containerRegistryName
   type: string
-# - name: containerImageName
-#   type: string
-# - name: containerImageTag
-#   type: string
-# - name: projectTriggerID
-#   type: string
-# - name: pipelineTriggerID
-#   type: string
+- name: containerImageName
+  type: string
+- name: containerImageTag
+  type: string
+- name: projectTriggerID
+  type: string
+- name: pipelineTriggerID
+  type: string
 
 stages:
   - stage: ${{ parameters.stageName }}
