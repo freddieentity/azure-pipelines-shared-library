@@ -60,7 +60,7 @@ stages:
             - script: |
                 pwd
                 ls
-                cat $(Resources.TriggeringAlias)/pipeline.env
+                cat $(Pipeline.Workspace)/$(Resources.TriggeringAlias)/pipeline.env
               displayName: 'Restore Enviornment Variables'
             - script: | 
                 echo "CONTAINER_IMAGE_NAME:$(containerImageName)"
@@ -75,8 +75,8 @@ stages:
                 scriptLocation: 'inlineScript'
                 inlineScript: |
                   az aks get-credentials --resource-group ${{ parameters.resourceGroup }} --name ${{ parameters.kubernetesCluster }}
-                  helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }} --version ${{ parameters.containerImageTag }}
-                  helm history ${{ parameters.containerImageName }}
+                  helm upgrade --install $(containerImageName) oci://${{ parameters.containerRegistryName }}/helm/$(containerImageName) --version $(containerImageTag)
+                  helm history $(containerImageName)
 
             - task: AzureCLI@2
               displayName: 'Rollback Previous Helm Release'
@@ -87,8 +87,8 @@ stages:
                 scriptLocation: 'inlineScript'
                 inlineScript: |
                   az aks get-credentials --resource-group ${{ parameters.resourceGroup }} --name ${{ parameters.kubernetesCluster }}   
-                  helm rollback ${{ parameters.containerImageName }} 0 # Previous release
-                  helm history ${{ parameters.containerImageName }}
+                  helm rollback $(containerImageName) 0 # Previous release
+                  helm history $(containerImageName)
 
             # - checkout: git://HomeLab/onlineboutique-helm-charts
 
