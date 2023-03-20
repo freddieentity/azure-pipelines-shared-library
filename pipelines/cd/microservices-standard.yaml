@@ -32,10 +32,8 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
         resourceGroup: ${{ parameters.resourceGroup }}
         kubernetesCluster: ${{ parameters.kubernetesCluster }}
         kubernetesNamespace: ${{ parameters.kubernetesNamespace }}
-        containerImageName: ${{ parameters.containerImageName }}
-        containerImageTag: ${{ parameters.containerImageTag }}
-  # - ${{ else eq(variables['Build.Reason'], 'Manual') }}:
-  - ${{ else }}:
+
+  - ${{ elseif eq(variables['Build.Reason'], 'Manual') }}:
     - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/aks.yaml
       parameters:
         environment: Development
@@ -48,6 +46,11 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
         kubernetesNamespace: ${{ parameters.kubernetesNamespace }}
         containerImageName: ${{ parameters.containerImageName }}
         containerImageTag: ${{ parameters.containerImageTag }}
+    
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/chatops/push-notification-to-slack.yaml
+    parameters:
+      stageName: Notification
+      stageDependencies: 
 
   # # Test
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
