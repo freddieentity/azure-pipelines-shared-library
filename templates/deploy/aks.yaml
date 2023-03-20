@@ -58,10 +58,7 @@ stages:
             #     downloadPath: '$(System.ArtifactsDirectory)'
 
             - script: |
-                pwd
-                ls
-                # cat $(Pipeline.Workspace)/$(Resources.TriggeringAlias)/pipeline.env
-                cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/pipeline.env
+                cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/variables/pipeline.env
               displayName: 'Restore Enviornment Variables'
             - script: | 
                 echo "CONTAINER_IMAGE_NAME:$(CONTAINER_IMAGE_NAME)"
