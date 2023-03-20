@@ -21,18 +21,32 @@ variables: # https://tsuyoshiushio.medium.com/how-to-pass-variables-with-pipelin
 
 stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/deployment-strategies.md
   # Development
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/aks.yaml
-    parameters:
-      environment: Development
-      stageName: Development
-      deploymentPoolName: Homelabpool
-      azureServiceConnection: SC ARM
-      containerRegistryName: $(CONTAINER_REGISTRY_NAME)
-      resourceGroup: ${{ parameters.resourceGroup }}
-      kubernetesCluster: ${{ parameters.kubernetesCluster }}
-      kubernetesNamespace: ${{ parameters.kubernetesNamespace }}
-      containerImageName: ${{ parameters.containerImageName }}
-      containerImageTag: ${{ parameters.containerImageTag }}
+  - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/aks.yaml
+      parameters:
+        environment: Development
+        stageName: Development
+        deploymentPoolName: Homelabpool
+        azureServiceConnection: SC ARM
+        containerRegistryName: $(CONTAINER_REGISTRY_NAME)
+        resourceGroup: ${{ parameters.resourceGroup }}
+        kubernetesCluster: ${{ parameters.kubernetesCluster }}
+        kubernetesNamespace: ${{ parameters.kubernetesNamespace }}
+        containerImageName: ${{ parameters.containerImageName }}
+        containerImageTag: ${{ parameters.containerImageTag }}
+  # - ${{ if eq(variables['Build.Reason'], 'Manual') }}:
+  #   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/aks.yaml
+  #     parameters:
+  #       environment: Development
+  #       stageName: Development
+  #       deploymentPoolName: Homelabpool
+  #       azureServiceConnection: SC ARM
+  #       containerRegistryName: $(CONTAINER_REGISTRY_NAME)
+  #       resourceGroup: ${{ parameters.resourceGroup }}
+  #       kubernetesCluster: ${{ parameters.kubernetesCluster }}
+  #       kubernetesNamespace: ${{ parameters.kubernetesNamespace }}
+  #       containerImageName: ${{ parameters.containerImageName }}
+  #       containerImageTag: ${{ parameters.containerImageTag }}
 
   # # Test
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
