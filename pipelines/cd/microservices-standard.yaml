@@ -23,12 +23,14 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
       environment: Development
       stageName: Development
       deploymentPoolName: Homelabpool
+      kubernetesCluster: aks-homelab-online-boutique
+      resourceGroup: rg-homelab-online-boutique
       azureServiceConnection: SC ARM
       containerRegistryName: $(CONTAINER_REGISTRY_NAME)
-      containerImageName: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineName) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
-      containerImageTag: $(resources.pipeline.$(Resources.TriggeringAlias).runName)
-      # projectTriggerID: $(resources.pipeline.$(Resources.TriggeringAlias).projectID)
-      # pipelineTriggerID: $(resources.pipeline.$(Resources.TriggeringAlias).pipelineID)
+      containerImageName: $(resources.pipeline.['Resources.TriggeringAlias'].pipelineName) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
+      containerImageTag: $(resources.pipeline.['Resources.TriggeringAlias'].runName)
+      # projectTriggerID: $(resources.pipeline.['Resources.TriggeringAlias'].projectID)
+      # pipelineTriggerID: $(resources.pipeline.['Resources.TriggeringAlias'].pipelineID)
 
   # # Test
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
