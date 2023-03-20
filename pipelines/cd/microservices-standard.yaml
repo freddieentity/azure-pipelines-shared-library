@@ -30,10 +30,11 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
       resourceGroup: rg-homelab-online-boutique
       azureServiceConnection: SC ARM
       containerRegistryName: $(CONTAINER_REGISTRY_NAME)
-      # containerImageName: $(containerImageName) # https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops#triggers
-      # containerImageTag: $(containerImageTag)
-      # projectTriggerID: $(projectTriggerID)
-      # pipelineTriggerID: $(pipelineTriggerID)
+      resourceGroup: ${{ parameters.resourceGroup }}
+      kubernetesCluster: ${{ parameters.kubernetesCluster }}
+      kubernetesNamespace: ${{ parameters.kubernetesNamespace }}
+      containerImageName: ${{ parameters.containerImageName }}
+      containerImageTag: ${{ parameters.containerImageTag }}
 
   # # Test
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
@@ -89,11 +90,16 @@ parameters:
     default: Development
   - name: resourceGroup
     type: string
+    default: ""
   - name: kubernetesCluster
     type: string
+    default: ""
   - name: kubernetesNamespace
     type: string
+    default: ""
   - name: containerImageName
     type: string
+    default: ""
   - name: containerImageTag
     type: string
+    default: ""
