@@ -103,6 +103,7 @@ stages:
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
+            az acr login -n ${{ parameters.containerRegistryName }}
             # Use standard helm chart for any microservices. Modify the chart version to match with container image tag by pull and re-package it then push to registry
             # In the context of individual microservices. Add the Helm repo 
             helm repo add ${{ parameters.helmRemoteChartRepositoryName }} ${{ parameters.helmRemoteChartRepositoryURL }}
