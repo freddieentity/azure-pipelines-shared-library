@@ -107,7 +107,7 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/chatops/push-notification-to-slack.yaml
     parameters:
       stageName: Notification
-      # stageDependencies: 
+      stageDependencies: 
       #   - Deployment
 
   # # Test
