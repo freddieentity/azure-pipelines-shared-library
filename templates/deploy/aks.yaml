@@ -64,8 +64,10 @@ stages:
                 downloadPath: '$(System.ArtifactsDirectory)'
 
             - script: |
-                cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/$(Resources.TriggeringAlias).env
+                # cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/$(Resources.TriggeringAlias).env
+                cat $(System.ArtifactsDirectory)/$(Resources.TriggeringAlias)/$(Resources.TriggeringAlias).env
               displayName: 'Restore Environment Variables From Triggering CI Pipeline'
+
             - script: | 
                 echo "CONTAINER_IMAGE_NAME:$(CONTAINER_IMAGE_NAME)"
                 echo "CONTAINER_IMAGE_TAG:$(CONTAINER_IMAGE_TAG)"
