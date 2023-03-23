@@ -1,10 +1,15 @@
 variables:
   # Pipeline conditions
   IS_MAIN:           ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}
-  IS_RELEASE:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/releases') }}
+  IS_RELEASE:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/release') }}
+  IS_DEVELOP:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}
+  IS_FEATURE:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/feature') }}
+  IS_BUGFIX:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/bugfix') }}
+  IS_HOTFIX:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/hotfix') }}
   IS_TAG:            ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}
   IS_FORK:           ${{ eq(variables['System.PullRequest.IsFork'], 'True') }}
   IS_PR:             ${{ eq(variables['Build.Reason'], 'PullRequest') }}
   IS_SCHEDULED:      ${{ eq(variables['Build.Reason'], 'Schedule') }}
+  IS_INDIVIDUALCI:      ${{ eq(variables['Build.Reason'], 'IndividualCI') }}
+  IS_RESOURCETRIGGER:      ${{ eq(variables['Build.Reason'], 'ResourceTrigger') }}
   IS_TRUSTEDCI:      ${{ and( eq(variables.isFork,'False'), eq(variables.isPR,'False'), eq(variables.isScheduled,'False') ) }}
-  DEPLOY_MAIN:       ${{ and( eq(variables.isMain,'True'), eq(variables.isTrustedCI,'True') ) }}
