@@ -26,7 +26,7 @@ services:
     image: grafana/grafana:latest
     user: "1000"
     volumes:
-    - ./grafana:/var/lib/grafana
+    - ./grafana-dashboard.yaml:/var/lib/grafana-dashboard.yaml
     environment:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
       - GF_AUTH_DISABLE_LOGIN_FORM=true
