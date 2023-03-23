@@ -1,0 +1,3 @@
+variables:
+  MICROSERVICE_NAME:    onlineboutique-nginxservice
+  SONAR_PROJECT_KEY:  onlineboutique-nginxservice
