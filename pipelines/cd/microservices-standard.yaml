@@ -12,6 +12,11 @@ resources:
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-nginxservice 
+    source: onlineboutique-nginxservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
   - pipeline: onlineboutique-adservice 
     source: onlineboutique-adservice
     trigger:
