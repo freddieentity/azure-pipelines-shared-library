@@ -52,7 +52,7 @@ stages:
             - download: current
               artifact: $(Resources.TriggeringAlias)
             - script: |
-                cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/$(Resources.TriggeringAlias)/pipeline.env
+                cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/$(Resources.TriggeringAlias).env
               displayName: 'Restore Environment Variables From Triggering CI Pipeline'
             - script: | 
                 echo "CONTAINER_IMAGE_NAME:$(CONTAINER_IMAGE_NAME)"

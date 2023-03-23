@@ -133,13 +133,13 @@ stages:
       #   name: Homelabpool
       steps:  
       - bash: |
-          echo "##vso[task.setvariable variable=CONTAINER_IMAGE_NAME;]${{ parameters.containerImageName }}" >>  $(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)/pipeline.env
-          echo "##vso[task.setvariable variable=CONTAINER_IMAGE_TAG;]${{ parameters.containerImageTag }}" >>  $(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)/pipeline.env
+          echo "##vso[task.setvariable variable=CONTAINER_IMAGE_NAME;]${{ parameters.containerImageName }}" >>  $(Build.ArtifactStagingDirectory)/$(Build.Repository.Name).env
+          echo "##vso[task.setvariable variable=CONTAINER_IMAGE_TAG;]${{ parameters.containerImageTag }}" >>  $(Build.ArtifactStagingDirectory)/$(Build.Repository.Name).env
         displayName: Prepare Variables For CD Pipeline
       
       - task: PublishBuildArtifacts@1
         displayName: Publish Prepared Variables
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'variables'
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/'
+          ArtifactName: '$(Build.Repository.Name)'
           publishLocation: 'Container'
