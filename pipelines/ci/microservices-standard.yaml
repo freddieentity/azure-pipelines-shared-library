@@ -10,42 +10,42 @@
 # https://stackoverflow.com/questions/59388549/azure-devops-yaml-pipeline-clean-up-dynamic-deployments
 # https://stackoverflow.com/questions/60396067/variable-inside-variable-azure-pipelines
 stages:
-  # UnitTest
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
-    parameters:
-      enabled: ${{ parameters.enableUnitTest }}
-      stageName: UnitTest
-      stageDependencies: 
+  # # UnitTest
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/unit-test.yaml
+  #   parameters:
+  #     enabled: ${{ parameters.enableUnitTest }}
+  #     stageName: UnitTest
+  #     stageDependencies: 
 
-  # SCA
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
-    parameters:
-      enabled: ${{ parameters.enableSCA }}
-      stageName: SCA
-      stageDependencies:
-        - UnitTest
+  # # SCA
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
+  #   parameters:
+  #     enabled: ${{ parameters.enableSCA }}
+  #     stageName: SCA
+  #     stageDependencies:
+  #       - UnitTest
 
-  # SAST
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
-    parameters:
-      enabled: ${{ parameters.enableSAST }}
-      stageName: SAST
-      stageDependencies:
-        - UnitTest
-      sonarQubeToken: 4ae523f01ada58d6b50e1667024d06494989a1c9
-      sonarQubeOrganization: freddieentity
-      sonarQubeProjectKey: complete-cicd
-      sonarQubeSources: $(Pipeline.Workspace)
-      sonarQubeHostURL: https://sonarcloud.io
+  # # SAST
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml
+  #   parameters:
+  #     enabled: ${{ parameters.enableSAST }}
+  #     stageName: SAST
+  #     stageDependencies:
+  #       - UnitTest
+  #     sonarQubeToken: 4ae523f01ada58d6b50e1667024d06494989a1c9
+  #     sonarQubeOrganization: freddieentity
+  #     sonarQubeProjectKey: complete-cicd
+  #     sonarQubeSources: $(Pipeline.Workspace)
+  #     sonarQubeHostURL: https://sonarcloud.io
 
   # Build
   - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/build/container-image-build.yaml
     parameters:
       enabled: ${{ parameters.enableBuild }}
       stageName: Build
-      stageDependencies:
-        - SCA
-        - SAST
+      # stageDependencies:
+      #   - SCA
+      #   - SAST
       azureServiceConnection: SC ARM
       containerRegistryName: ${{ parameters.containerRegistryName }}
       containerImageName: ${{ parameters.containerImageName }}

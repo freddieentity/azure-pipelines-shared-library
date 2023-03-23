@@ -43,12 +43,16 @@ stages:
       pool:
         name: ${{ parameters.deploymentPoolName }} 
       environment: ${{ parameters.environment }}
+      workspace:
+        clean: all
       strategy:
         runOnce:
           deploy:
             steps:
+            - download: current
+              artifact: $(Resources.TriggeringAlias)
             - script: |
-                cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/variables/pipeline.env
+                cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/$(Resources.TriggeringAlias)/pipeline.env
               displayName: 'Restore Environment Variables From Triggering CI Pipeline'
             - script: | 
                 echo "CONTAINER_IMAGE_NAME:$(CONTAINER_IMAGE_NAME)"
