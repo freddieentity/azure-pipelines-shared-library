@@ -1,23 +1,26 @@
 receivers:
-  zipkin:
-  otlp:
-    protocols:
-      grpc:
-      http:
+  filelog:
+    include: [/var/log/*.log]
+
 processors:
-  batch:
-    timeout: 10s
+ attributes:
+   actions:
+     - action: insert
+       key: log_file_name
+       from_attribute: log.file.name
+     - action: insert
+       key: loki.attribute.labels
+       value: log_file_name
+
 exporters:
-  zipkin:
-    endpoint: "http://zipkin:9411/api/v2/spans"
-extensions:
-  health_check:
+  logging:
+    logLevel: debug
+
+  loki:
+    endpoint: "http://localhost:3100/loki/api/v1/push"
 service:
-  extensions: [health_check]
   pipelines:
-    traces:
-      receivers: [zipkin, otlp]
-      processors: [batch]
-      exporters: [zipkin]
-    metrics:
     logs:
+      receivers: [filelog]
+      processors: [attributes]
+      exporters: [logging, loki]

@@ -12,7 +12,61 @@ resources:
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-
+  - pipeline: onlineboutique-adservice 
+    source: onlineboutique-adservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-cartservice 
+    source: onlineboutique-cartservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-checkoutservice 
+    source: onlineboutique-checkoutservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-currencyservice 
+    source: onlineboutique-currencyservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-emailservice 
+    source: onlineboutique-emailservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-frontend 
+    source: onlineboutique-frontend
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-loadgenerator 
+    source: onlineboutique-loadgenerator
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-paymentservice 
+    source: onlineboutique-paymentservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-productcatalogservice 
+    source: onlineboutique-productcatalogservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-recommendationservice 
+    source: onlineboutique-recommendationservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
+  - pipeline: onlineboutique-shippingservice 
+    source: onlineboutique-shippingservice
+    trigger:
+      branches:
+        include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
 
 # https://adamtheautomator.com/azure-devops-variables/
 # https://stackoverflow.com/questions/65598404/need-replace-alias-value-of-predefined-variables-in-azure-devops-pipelines

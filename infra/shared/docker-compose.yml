@@ -8,24 +8,30 @@ services:
       - "3100:3100"
     restart: unless-stopped
     command: -config.file=/etc/loki/loki-config.yml
-
-  fluent-bit: #https://github.com/thakkaryash94/docker-grafana-loki-fluent-bit-sample
+    
+  fluent-bit:
     image: grafana/fluent-bit-plugin-loki:latest
     container_name: fluent-bit
     environment:
       - LOKI_URL=http://loki:3100/loki/api/v1/push
     volumes:
-      - ./fluent-bit/:/fluent-bit/etc/
-      - /var/lib/docker/containers:/var/lib/docker/containers
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
     ports:
       - "24224:24224"
       - "24224:24224/udp"
+    networks:
+      - loki
 
   grafana:
     image: grafana/grafana:latest
     user: "1000"
     volumes:
     - ./grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     ports:
       - "3000:3000" #you might need to change this
     restart: unless-stopped
@@ -37,21 +43,21 @@ services:
   #     options:
   #       fluentd-address: fluent-bit:24224
     
-  # zipkin:
-  #   image: openzipkin/zipkin
-  #   container_name: zipkin
-  #   ports:
-  #     - 9411:9411
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - 9411:9411
 
-  # otel-collector:
-  #   image: otel/opentelemetry-collector-contrib:latest
-  #   command: ["--config=/etc/otel-collector-config.yml"]
-  #   volumes:
-  #     - ./opentelemetry/otel-collector-config.yml:/etc/otel-collector-config.yml
-  #   ports:
-  #     - "13133:13133" # health_check extension
-  #     - "9411" # Zipkin receiver
-  #     - "4317:4317" # OTLP receiver
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./opentelemetry/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "13133:13133" # health_check extension
+      - "9411" # Zipkin receiver
+      - "4317:4317" # OTLP receiver
 
 networks:
   homelab:
