@@ -47,6 +47,18 @@ stages:
         runOnce:
           deploy:
             steps:
+            - download: none
+
+            - task: DownloadBuildArtifacts@1
+              displayName: 'Download CI Pipeline Variables Artifact'
+              inputs:
+                buildType: 'specific'
+                project: 'HomeLab'
+                pipeline: $(Resources.TriggeringAlias)
+                buildVersionToDownload: 'latest'
+                downloadType: 'specific'
+                downloadPath: '$(System.ArtifactsDirectory)'
+                
             - script: |
                 cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/variables/pipeline.env
               displayName: 'Restore Environment Variables From Triggering CI Pipeline'
