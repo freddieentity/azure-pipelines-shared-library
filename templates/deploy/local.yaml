@@ -42,8 +42,6 @@ stages:
       # displayName: ${{ parameters.stageName }} 
       pool:
         name: ${{ parameters.deploymentPoolName }} 
-        demands:
-          - Homelabpool
       environment: ${{ parameters.environment }}
       strategy:
         runOnce:
