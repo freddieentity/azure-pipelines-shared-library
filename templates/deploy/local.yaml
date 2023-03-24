@@ -57,29 +57,23 @@ stages:
                 echo "CONTAINER_IMAGE_TAG:$(CONTAINER_IMAGE_TAG)"
               displayName: 'Print Triggering CI Pipeline Outputs'
 
-            - task: AzureCLI@2
-              displayName: 'Deploy Helm Chart Artifact'
-              inputs:
-                azureSubscription: ${{ parameters.azureServiceConnection }}
-                scriptType: 'bash'
-                scriptLocation: 'inlineScript'
-                inlineScript: |
-                  kind create cluster --name=${{ parameters.kubernetesCluster }}
-                  kubectl config use-context ${{ parameters.kubernetesCluster }}
-                  helm upgrade --install $(CONTAINER_IMAGE_NAME) oci://${{ parameters.containerRegistryName }}/helm/$(CONTAINER_IMAGE_NAME) --version $(CONTAINER_IMAGE_TAG)
-                  helm history $(CONTAINER_IMAGE_NAME)
+            # - bash: |
+            #     kind create cluster --name=${{ parameters.kubernetesCluster }}
+            #   displayName: Provision Environment Infrastructure
 
-            - task: AzureCLI@2
+            - bash: |                
+                # kubectl config use-context ${{ parameters.kubernetesCluster }}
+                kubectl config use-context kind-homelab
+                helm upgrade --install $(CONTAINER_IMAGE_NAME) oci://${{ parameters.containerRegistryName }}/helm/$(CONTAINER_IMAGE_NAME) --version $(CONTAINER_IMAGE_TAG)
+                helm history $(CONTAINER_IMAGE_NAME)
+              displayName: 'Deploy Helm Chart Artifact'
+
+            - bash: |
+                # kubectl config use-context ${{ parameters.kubernetesCluster }}
+                kubectl config use-context kind-homelab
+                helm rollback $(CONTAINER_IMAGE_NAME) 0 # Previous release
+                helm history $(CONTAINER_IMAGE_NAME)
               displayName: 'Rollback Previous Helm Release'
-              condition: failed()
-              inputs:
-                azureSubscription: ${{ parameters.azureServiceConnection }}
-                scriptType: 'bash'
-                scriptLocation: 'inlineScript'
-                inlineScript: |
-                  kubectl config use-context ${{ parameters.kubernetesCluster }}
-                  helm rollback $(CONTAINER_IMAGE_NAME) 0 # Previous release
-                  helm history $(CONTAINER_IMAGE_NAME)
 
             # - checkout: git://HomeLab/onlineboutique-helm-charts
 
