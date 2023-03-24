@@ -1,7 +1,7 @@
 parameters:
 - name: environment
   type: string
-  default: dev
+  default: Development
 - name: enabled
   type: boolean
   default: true
@@ -14,22 +14,22 @@ parameters:
 - name: deploymentPoolName
   type: string
   default: 'Homelabpool'
-- name: kubernetesCluster
+- name: azureServiceConnection
   type: string
 - name: resourceGroup
   type: string
-- name: azureServiceConnection
+- name: kubernetesCluster
+  type: string
+- name: kubernetesNamespace
   type: string
 - name: containerRegistryName
   type: string
-# - name: containerImageName
-#   type: string
-# - name: containerImageTag
-#   type: string
-# - name: projectTriggerID
-#   type: string
-# - name: pipelineTriggerID
-#   type: string
+- name: containerImageName
+  type: string
+  default: ""
+- name: containerImageTag
+  type: string
+  default: ""
 
 stages:
   - stage: ${{ parameters.stageName }}
