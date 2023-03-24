@@ -92,7 +92,7 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
         kubernetesNamespace: ${{ parameters.kubernetesNamespace }}
 
   - ${{ elseif eq(variables['Build.Reason'], 'Manual') }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/aks.yaml
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/local.yaml
       parameters:
         stageName: Deployment
         deploymentPoolName: Homelabpool

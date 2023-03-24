@@ -42,6 +42,8 @@ stages:
       # displayName: ${{ parameters.stageName }} 
       pool:
         name: ${{ parameters.deploymentPoolName }} 
+        demands:
+          - Homelabpool
       environment: ${{ parameters.environment }}
       strategy:
         runOnce:
@@ -62,7 +64,8 @@ stages:
                 scriptType: 'bash'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
-                  az aks get-credentials --resource-group ${{ parameters.resourceGroup }} --name ${{ parameters.kubernetesCluster }}
+                  kind create cluster --name=${{ parameters.kubernetesCluster }}
+                  kubectl config use-context ${{ parameters.kubernetesCluster }}
                   helm upgrade --install $(CONTAINER_IMAGE_NAME) oci://${{ parameters.containerRegistryName }}/helm/$(CONTAINER_IMAGE_NAME) --version $(CONTAINER_IMAGE_TAG)
                   helm history $(CONTAINER_IMAGE_NAME)
 
@@ -74,7 +77,7 @@ stages:
                 scriptType: 'bash'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
-                  az aks get-credentials --resource-group ${{ parameters.resourceGroup }} --name ${{ parameters.kubernetesCluster }}   
+                  kubectl config use-context ${{ parameters.kubernetesCluster }}
                   helm rollback $(CONTAINER_IMAGE_NAME) 0 # Previous release
                   helm history $(CONTAINER_IMAGE_NAME)
 
