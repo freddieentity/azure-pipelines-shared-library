@@ -81,7 +81,7 @@ variables: # https://tsuyoshiushio.medium.com/how-to-pass-variables-with-pipelin
 stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/deployment-strategies.md
   # Development
   - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
-    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/aks.yaml
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/local.yaml
       parameters:
         stageName: Deployment
         deploymentPoolName: Homelabpool
