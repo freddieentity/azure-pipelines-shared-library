@@ -76,16 +76,21 @@ stages:
             - bash: |                
                 # kubectl config use-context ${{ parameters.kubernetesCluster }}
                 kubectl config use-context kind-homelab
-                helm upgrade --install $(CONTAINER_IMAGE_NAME) oci://${{ parameters.containerRegistryName }}/helm/$(CONTAINER_IMAGE_NAME) --version $(CONTAINER_IMAGE_TAG)
-                helm history $(CONTAINER_IMAGE_NAME)
+                helm upgrade --install $(CONTAINER_IMAGE_NAME) oci://${{ parameters.containerRegistryName }}/helm/$(CONTAINER_IMAGE_NAME) --version $(CONTAINER_IMAGE_TAG) --namespace ${{ parameters.kubernetesNamespace }} --create-namespace
+                helm history $(CONTAINER_IMAGE_NAME) --namespace ${{ parameters.kubernetesNamespace }}
               displayName: 'Deploy Helm Chart Artifact'
 
             - bash: |
                 # kubectl config use-context ${{ parameters.kubernetesCluster }}
                 kubectl config use-context kind-homelab
                 helm rollback $(CONTAINER_IMAGE_NAME) 0 # Previous release
-                helm history $(CONTAINER_IMAGE_NAME)
+                helm history $(CONTAINER_IMAGE_NAME) --namespace ${{ parameters.kubernetesNamespace }}
               displayName: 'Rollback Previous Helm Release'
+              condition: failed()
+
+            # - bash: |
+            #     kind delete cluster --name=${{ parameters.kubernetesCluster }}
+            #   displayName: Delete Environment Infrastructure
 
             # - checkout: git://HomeLab/onlineboutique-helm-charts
 
@@ -96,15 +101,3 @@ stages:
  
             #   displayName: Helm Install
             
-    # - job: HelmDeploy
-    #   displayName: Helm Deploy
-    #   dependsOn: HelmPackageAndPublish
-    #   pool:
-    #     name: Homelabpool
-    #   steps:
-    #   - bash: |
-    #       kubectl config use-context kind-homelab
-    #       helm upgrade --install ${{ parameters.containerImageName }} ${{ parameters.helmChartPath }}/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-    #       helm history ${{ parameters.containerImageName }}
-    #       # helm upgrade --install ${{ parameters.containerImageName }} oci://${{ parameters.containerRegistryName }}/helm/${{ parameters.containerImageName }}-${{ parameters.containerImageTag }}.tgz
-    #     displayName: Helm Deploy
