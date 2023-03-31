@@ -1,7 +1,7 @@
 variables:
   # Global
   # Environment Specific Variables
-  ${{ elseif eq(variables.IS_FEATURE, 'True') }}:
+  ${{ if eq(variables.IS_FEATURE, 'True') }}:
     GIT_BASED_ENVIRONMENT: 'develop'
     SERVICE_CONNECTION: SC ARM
     RESOURCE_GROUP: 
@@ -33,7 +33,7 @@ variables:
     KUBERNETES_CLUSTER: kind-homelab
     CONTAINER_IMAGE_TAG: 
     APPLICATION_DOMAIN: sit.127.0.0.1.nip.io
-  ${{ if eq(variables.IS_MAIN, 'True') }}:
+  ${{ elseif eq(variables.IS_MAIN, 'True') }}:
     GIT_BASED_ENVIRONMENT: 'production'
     SERVICE_CONNECTION: SC ARM
     RESOURCE_GROUP: 
