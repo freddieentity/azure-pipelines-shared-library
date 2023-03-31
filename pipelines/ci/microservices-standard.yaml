@@ -88,6 +88,9 @@ parameters:
   - name: containerImageTag
     type: string
     default: $(Build.BuildNumber)
+  - name: containerImageBuildContext
+    type: string
+    default: '.'
   - name: enableUnitTest
     type: boolean
     default: true
