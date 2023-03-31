@@ -85,7 +85,7 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
       parameters:
         stageName: Deployment
         deploymentPoolName: Homelabpool
-        azureServiceConnection: SC ARM
+        azureServiceConnection: $(SERVICE_CONNECTION) # SC ARM
         containerRegistryName: $(CONTAINER_REGISTRY_NAME)
         resourceGroup: ${{ parameters.resourceGroup }}
         kubernetesCluster: ${{ parameters.kubernetesCluster }}

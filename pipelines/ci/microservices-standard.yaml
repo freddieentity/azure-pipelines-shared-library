@@ -9,8 +9,6 @@
 # https://medium.com/@michal.slovik/hints-and-tips-for-azure-devops-pipeline-a741ef53ce7
 # https://stackoverflow.com/questions/59388549/azure-devops-yaml-pipeline-clean-up-dynamic-deployments
 # https://stackoverflow.com/questions/60396067/variable-inside-variable-azure-pipelines
-variables:
-  - template: ${{variables['System.DefaultWorkingDirectory']}}/variables/common/global.yaml
 
 stages:
   # # UnitTest
@@ -49,8 +47,8 @@ stages:
       # stageDependencies:
       #   - SCA
       #   - SAST
-      azureServiceConnection: $(SERVICE_CONNECTION) # SC ARM
-      containerRegistryName: $(CONTAINER_REGISTRY_NAME) # ${{ parameters.containerRegistryName }}
+      azureServiceConnection: SC ARM
+      containerRegistryName: ${{ parameters.containerRegistryName }}
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
       helmRemoteChartRepositoryURL: https://freddieentity.github.io/universal-helm-charts
