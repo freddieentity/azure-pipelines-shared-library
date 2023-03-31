@@ -1,0 +1,99 @@
+parameters:
+- name: environment
+  type: string
+  default: Development
+- name: enabled
+  type: boolean
+  default: true
+- name: stageName
+  type: string
+  default: ''
+- name: stageDependencies 
+  type: object 
+  default: 
+- name: deploymentPoolName
+  type: string
+  default: 'Homelabpool'
+- name: azureServiceConnection
+  type: string
+- name: resourceGroup
+  type: string
+- name: kubernetesCluster
+  type: string
+- name: kubernetesNamespace
+  type: string
+- name: containerRegistryName
+  type: string
+- name: containerImageName
+  type: string
+  default: ""
+- name: containerImageTag
+  type: string
+  default: ""
+
+stages:
+  - stage: ${{ parameters.stageName }}
+    displayName: ${{ parameters.stageName }}
+    # condition: 
+    dependsOn: ${{ parameters.stageDependencies }}
+    # pool:
+    jobs:
+    - deployment: 
+      # displayName: ${{ parameters.stageName }} 
+      pool:
+        name: ${{ parameters.deploymentPoolName }} 
+      environment: ${{ parameters.environment }}
+      workspace:
+        clean: all
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: none
+
+            - task: DownloadBuildArtifacts@1
+              displayName: 'Download CI Pipeline Variables Artifact'
+              inputs:
+                buildType: 'specific'
+                project: 'HomeLab'
+                pipeline: $(Resources.TriggeringAlias)
+                buildVersionToDownload: 'latest'
+                downloadType: 'specific'
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - script: |
+                # cat $(Agent.BuildDirectory)/$(Resources.TriggeringAlias)/$(Resources.TriggeringAlias).env
+                cat $(System.ArtifactsDirectory)/$(Resources.TriggeringAlias)/$(Resources.TriggeringAlias).env
+              displayName: 'Restore Environment Variables From Triggering CI Pipeline'
+
+            - script: | 
+                echo "CONTAINER_IMAGE_NAME:$(CONTAINER_IMAGE_NAME)"
+                echo "CONTAINER_IMAGE_TAG:$(CONTAINER_IMAGE_TAG)"
+              displayName: 'Print Triggering CI Pipeline Outputs'
+
+            - task: AzureCLI@2
+              displayName: 'Deploy Helm Chart Artifact'
+              inputs:
+                azureSubscription: ${{ parameters.azureServiceConnection }}
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az aks get-credentials --resource-group ${{ parameters.resourceGroup }} --name ${{ parameters.kubernetesCluster }}
+                  helm upgrade --install $(CONTAINER_IMAGE_NAME) oci://${{ parameters.containerRegistryName }}/helm/$(CONTAINER_IMAGE_NAME) --version $(CONTAINER_IMAGE_TAG) --namespace ${{ parameters.kubernetesNamespace }} --create-namespace
+                  helm history $(CONTAINER_IMAGE_NAME) --namespace ${{ parameters.kubernetesNamespace }}
+
+            - task: AzureCLI@2
+              displayName: 'Rollback Previous Helm Release'
+              condition: failed()
+              inputs:
+                azureSubscription: ${{ parameters.azureServiceConnection }}
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az aks get-credentials --resource-group ${{ parameters.resourceGroup }} --name ${{ parameters.kubernetesCluster }}   
+                  helm rollback $(CONTAINER_IMAGE_NAME) 0 # Previous release
+                  helm history $(CONTAINER_IMAGE_NAME) --namespace ${{ parameters.kubernetesNamespace }}
+            
+              
+            
+                

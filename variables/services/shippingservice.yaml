@@ -1,0 +1,3 @@
+variables:
+  MICROSERVICE_NAME:    onlineboutique-shippingservice
+  SONAR_PROJECT_KEY:  onlineboutique-shippingservice

@@ -1,14 +1,59 @@
 variables:
-  # ARM
+  # Global
+  # Environment Specific Variables
+  ${{ elseif eq(variables.IS_FEATURE, 'True') }}:
+    GIT_BASED_ENVIRONMENT: 'develop'
+    SERVICE_CONNECTION: SC ARM
+    RESOURCE_GROUP: 
+    KUBERNETES_NAMESPACE: 'develop'
+    KUBERNETES_CLUSTER: kind-homelab
+    CONTAINER_IMAGE_TAG: 
+    APPLICATION_DOMAIN: 127.0.0.1.nip.io
+  ${{ elseif eq(variables.IS_DEVELOP, 'True') }}:
+    GIT_BASED_ENVIRONMENT: 'develop'
+    SERVICE_CONNECTION: SC ARM
+    RESOURCE_GROUP: 
+    KUBERNETES_NAMESPACE: 'develop'
+    KUBERNETES_CLUSTER: kind-homelab
+    CONTAINER_IMAGE_TAG: 
+    APPLICATION_DOMAIN: develop.127.0.0.1.nip.io
+  ${{ elseif eq(variables.IS_RELEASE, 'True') }}:
+    GIT_BASED_ENVIRONMENT: 'sit'
+    SERVICE_CONNECTION: SC ARM
+    RESOURCE_GROUP: 
+    KUBERNETES_NAMESPACE: 'sit'
+    KUBERNETES_CLUSTER: kind-homelab
+    CONTAINER_IMAGE_TAG: 
+    APPLICATION_DOMAIN: sit.127.0.0.1.nip.io
+  ${{ elseif eq(variables.IS_BUGFIX, 'True') }}:
+    GIT_BASED_ENVIRONMENT: 'sit'
+    SERVICE_CONNECTION: SC ARM
+    RESOURCE_GROUP: 
+    KUBERNETES_NAMESPACE: 'sit'
+    KUBERNETES_CLUSTER: kind-homelab
+    CONTAINER_IMAGE_TAG: 
+    APPLICATION_DOMAIN: sit.127.0.0.1.nip.io
+  ${{ if eq(variables.IS_MAIN, 'True') }}:
+    GIT_BASED_ENVIRONMENT: 'production'
+    SERVICE_CONNECTION: SC ARM
+    RESOURCE_GROUP: 
+    KUBERNETES_NAMESPACE: 'production'
+    KUBERNETES_CLUSTER: kind-homelab
+    CONTAINER_IMAGE_TAG: 
+    APPLICATION_DOMAIN: 127.0.0.1.nip.io
+  # ${{ if eq(variables.IS_HOTFIX:, 'True') }}:
+  #   GIT_BASED_ENVIRONMENT: 'production'
+  #   SERVICE_CONNECTION: SC ARM
+  #   RESOURCE_GROUP: 
+  #   KUBERNETES_NAMESPACE: 'production'
+  #   KUBERNETES_CLUSTER: kind-homelab
+  #   CONTAINER_IMAGE_TAG: 
+  #   APPLICATION_DOMAIN: 127.0.0.1.nip.io
+
   SONARQUBE_URL: http://sonarqube.127.0.0.1.nip.io
   VAULT_URL: http://vault.127.0.0.1.nip.io
   CONTAINER_REGISTRY_NAME: freddieentity.azurecr.io # 0908887875
   CONTAINER_REGISTRY_CREDENTIALS: # homelabregistrycredentials
-  APPLICATION_DOMAIN: 127.0.0.1.nip.io
-
-  # Weather Service
-  WEATHER_SERVICE_ADDR: weatherservice
-  WEATHER_SERVICE_PORT: 8080
 
   # OpenTelemetry Collector
   OTEL_COLLECTOR_HOST: otelcol
@@ -39,8 +84,17 @@ variables:
   PROMETHEUS_SERVICE_HOST: prometheus
   PROMETHEUS_ADDR: ${PROMETHEUS_SERVICE_HOST}:${PROMETHEUS_SERVICE_PORT}
 
-  # To be overwritten by each environment YAML
-  SC_ARM: SC NonProd ARM
-  KUBERNETES_CLUSTER: SC NonProd K8S
-
-  # Tagging strategies
+  # Pipeline conditions
+  IS_MAIN:           ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}
+  IS_RELEASE:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/release') }}
+  IS_DEVELOP:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}
+  IS_FEATURE:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/feature') }}
+  IS_BUGFIX:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/bugfix') }}
+  IS_HOTFIX:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/hotfix') }}
+  IS_TAG:            ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}
+  IS_FORK:           ${{ eq(variables['System.PullRequest.IsFork'], 'True') }}
+  IS_PR:             ${{ eq(variables['Build.Reason'], 'PullRequest') }}
+  IS_SCHEDULED:      ${{ eq(variables['Build.Reason'], 'Schedule') }}
+  IS_INDIVIDUALCI:      ${{ eq(variables['Build.Reason'], 'IndividualCI') }}
+  IS_RESOURCETRIGGER:      ${{ eq(variables['Build.Reason'], 'ResourceTrigger') }}
+  IS_TRUSTEDCI:      ${{ and( eq(variables.isFork,'False'), eq(variables.isPR,'False'), eq(variables.isScheduled,'False') ) }}

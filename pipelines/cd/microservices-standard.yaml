@@ -161,7 +161,8 @@ parameters:
   - name: environment
     displayName: Environment
     type: string
-    default: Development
+    default: development
+    values: [ "Development", "SIT", "QA", "Staging", "Production"]
   - name: resourceGroup
     type: string
     default: "rg-homelab-online-boutique"

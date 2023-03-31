@@ -17,6 +17,9 @@ parameters:
 - name: containerImageTag
   type: string
   default: $(Build.BuildNumber)
+- name: containerImageBuildContext
+  type: string
+  default: '.'
 - name: helmRemoteChartRepositoryURL
   type: string
 - name: helmRemoteChartRepositoryName
@@ -48,7 +51,7 @@ stages:
       # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/helpers/append-sha.yaml
 
       - bash: |
-          docker build -t ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} .
+          docker build -t ${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }} ${{ parameters.containerImageBuildContext }}
         displayName: Docker Build
 
       - task: AzureCLI@2

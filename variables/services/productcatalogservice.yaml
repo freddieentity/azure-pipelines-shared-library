@@ -1,0 +1,3 @@
+variables:
+  MICROSERVICE_NAME:    onlineboutique-productcatalogservice
+  SONAR_PROJECT_KEY:  onlineboutique-productcatalogservice

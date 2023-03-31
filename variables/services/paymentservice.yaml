@@ -1,0 +1,3 @@
+variables:
+  MICROSERVICE_NAME:    onlineboutique-paymentservice
+  SONAR_PROJECT_KEY:  onlineboutique-paymentservice

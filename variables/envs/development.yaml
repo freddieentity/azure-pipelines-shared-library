@@ -1,6 +1,0 @@
-variables:
-  kubernetesCluster:    azure-netcore6-demo-dev
-  resourceGroup: netcore6-dev
-  kubernetesNamespace:   netcore6demo-dev
-  azureServiceConnection:
-  nodeEnvName:   staging
