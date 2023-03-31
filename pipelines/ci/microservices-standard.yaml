@@ -51,6 +51,7 @@ stages:
       containerRegistryName: ${{ parameters.containerRegistryName }}
       containerImageName: ${{ parameters.containerImageName }}
       containerImageTag: ${{ parameters.containerImageTag }}
+      containerImageBuildContext: ${{ parameters.containerImageBuildContext }}
       helmRemoteChartRepositoryURL: https://freddieentity.github.io/universal-helm-charts
       helmRemoteChartRepositoryName: universal-helm-charts
       helmChartPath: $(System.DefaultWorkingDirectory)/deploy/helm
@@ -90,7 +91,6 @@ parameters:
     default: $(Build.BuildNumber)
   - name: containerImageBuildContext
     type: string
-    default: '.'
   - name: enableUnitTest
     type: boolean
     default: true
