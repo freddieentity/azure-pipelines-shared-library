@@ -161,7 +161,7 @@ parameters:
   - name: environment
     displayName: Environment
     type: string
-    default: development
+    default: Development
     values: [ "Development", "SIT", "QA", "Staging", "Production"]
   - name: resourceGroup
     type: string
