@@ -7,68 +7,68 @@ trigger: none
 resources:
   # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops&tabs=schema#resources-containers
   pipelines: # https://bartwullems.blogspot.com/2021/06/azure-pipelines-template-expression-is.html
-  - pipeline: onlineboutique-weatherservice # Can't use template expression for resources section except for containers
-    source: onlineboutique-weatherservice
+  - pipeline: weatherservice # Can't use template expression for resources section except for containers
+    source: weatherservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-nginxservice 
-    source: onlineboutique-nginxservice
+  - pipeline: nginxservice 
+    source: nginxservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-adservice 
-    source: onlineboutique-adservice
+  - pipeline: adservice 
+    source: adservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-cartservice 
-    source: onlineboutique-cartservice
+  - pipeline: cartservice 
+    source: cartservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-checkoutservice 
-    source: onlineboutique-checkoutservice
+  - pipeline: checkoutservice 
+    source: checkoutservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-currencyservice 
-    source: onlineboutique-currencyservice
+  - pipeline: currencyservice 
+    source: currencyservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-emailservice 
-    source: onlineboutique-emailservice
+  - pipeline: emailservice 
+    source: emailservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-frontend 
-    source: onlineboutique-frontend
+  - pipeline: frontend 
+    source: frontend
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-loadgenerator 
-    source: onlineboutique-loadgenerator
+  - pipeline: loadgenerator 
+    source: loadgenerator
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-paymentservice 
-    source: onlineboutique-paymentservice
+  - pipeline: paymentservice 
+    source: paymentservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-productcatalogservice 
-    source: onlineboutique-productcatalogservice
+  - pipeline: productcatalogservice 
+    source: productcatalogservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-recommendationservice 
-    source: onlineboutique-recommendationservice
+  - pipeline: recommendationservice 
+    source: recommendationservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
-  - pipeline: onlineboutique-shippingservice 
-    source: onlineboutique-shippingservice
+  - pipeline: shippingservice 
+    source: shippingservice
     trigger:
       branches:
         include: [ refs/heads/main, refs/heads/develop, refs/heads/release/* ]
