@@ -109,7 +109,52 @@ stages: # https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/d
       stageName: Notification
       stageDependencies: 
       #   - Deployment
+  # # Test
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+  #   parameters:
+  #     environment: Test
+  #     stageName: Test
+  #     stageDependencies:
+  #       - Development
+  #     deploymentPoolName: Homelabpool
+  #     microserviceName: weatherservice
 
+  # # Automation Test
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/test/automation-test.yaml
+  #   parameters:
+  #     stageName: AutomationTest
+  #     stageDependencies:
+  #       - Test
+
+  # # DAST
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/dast/owasp-zap.yaml
+  #   parameters:
+  #     stageName: DAST
+  #     stageDependencies:
+  #       - Test
+  #     targetEndpoint: https://www.example.com
+  #     reportOutputPath: /home/vsts/work/1/a/zap_report.html
+        
+  # # Staging   
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+  #   parameters:
+  #     environment: Staging
+  #     stageName: Staging
+  #     stageDependencies:
+  #       - Test
+  #     deploymentPoolName: Homelabpool
+  #     microserviceName: weatherservice
+
+  # # Production
+  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/deploy/basic.yaml
+  #   parameters:
+  #     environment: Production
+  #     stageName: Production
+  #     stageDependencies:
+  #       - Staging
+  #     deploymentPoolName: Homelabpool
+  #     microserviceName: weatherservice
+  
 parameters:
   - name: environment
     displayName: Environment

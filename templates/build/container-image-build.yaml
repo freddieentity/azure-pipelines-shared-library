@@ -116,8 +116,8 @@ stages:
             helm search repo ${{ parameters.helmRemoteChartRepositoryName }}
 
             # Modify build time Helm values
-            yq -i '.microservices-standard.image.repository = "${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/values.yaml  
-            yq -i '.microservices-standard.image.tag = "${{ parameters.containerImageTag }}"' ${{ parameters.helmChartPath }}/values.yaml  
+            yq -i '.microservices-standard.containers[0].image = "${{ parameters.containerRegistryName }}/${{ parameters.containerImageName }}:${{ parameters.containerImageTag }}"' ${{ parameters.helmChartPath }}/values.yaml  
+            yq -i '.microservices-standard.containers[0].name = "${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/values.yaml  
             yq -i '.microservices-standard.fullnameOverride = "${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/values.yaml  
             # Change the Chart name to make the package name corresponding to each microservices
             yq -i '.name = "${{ parameters.containerImageName }}"' ${{ parameters.helmChartPath }}/Chart.yaml # Override chart name for specific microservices 
