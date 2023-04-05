@@ -79,6 +79,11 @@ stages:
                 helm upgrade --install $(CONTAINER_IMAGE_NAME) oci://${{ parameters.containerRegistryName }}/helm/$(CONTAINER_IMAGE_NAME) --version $(CONTAINER_IMAGE_TAG) --namespace ${{ parameters.kubernetesNamespace }} --create-namespace
                 helm history $(CONTAINER_IMAGE_NAME) --namespace ${{ parameters.kubernetesNamespace }}
               displayName: 'Deploy Helm Chart Artifact'
+            
+            - bash: |
+                echo "Build and Snapshot Release Version For Helmfile"
+                # yq -i '.releases |= map(select(.name=="$(CONTAINER_IMAGE_NAME)").version="$(CONTAINER_IMAGE_TAG)")' helmfile.yaml
+              displayName: 'Build and Snapshot Release Version For Helmfile'
 
             - bash: |
                 # kubectl config use-context ${{ parameters.kubernetesCluster }}
