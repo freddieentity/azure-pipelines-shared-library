@@ -18,13 +18,13 @@ stages:
   #     stageName: UnitTest
   #     stageDependencies: 
 
-  # # SCA
-  # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
-  #   parameters:
-  #     enabled: ${{ parameters.enableSCA }}
-  #     stageName: SCA
-  #     stageDependencies:
-  #       - UnitTest
+  # SCA
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sca/owasp-dependency-check.yaml
+    parameters:
+      enabled: ${{ parameters.enableSCA }}
+      stageName: SCA
+      # stageDependencies:
+      #   - UnitTest
 
   # # SAST
   # - template: ${{variables['System.DefaultWorkingDirectory']}}/templates/security/sast/sonarqube.yaml

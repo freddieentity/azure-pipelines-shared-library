@@ -20,6 +20,13 @@ stages:
     - job: SCAScanning
       displayName: SCA Scanning
       steps:
-      - bash: |
-          echo 'SCA Scanning...'
-        displayName: SCA Scanning
+      # - bash: |
+      #     echo 'SCA Scanning...'
+      #   displayName: SCA Scanning
+      - task: dependency-check-build-task@6
+        inputs:
+          projectName: 'freddieentity'
+          scanPath: '$(System.DefaultWorkingDirectory)'
+          format: 'HTML'
+          reportsDirectory: '$(System.DefaultWorkingDirectory)/Reports'
+          reportFilename: 'dependencyCheckReport.html'
